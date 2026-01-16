@@ -302,6 +302,13 @@ def search_photos():
         cursor.execute(sql_data, params)
         photos = cursor.fetchall()
 
+        for photo in photos:
+            if photo.get('shoot_time'):
+                photo['shoot_time'] = photo['shoot_time'].strftime('%Y-%m-%d %H:%M:%S')
+
+            if photo.get('upload_time'):
+                photo['upload_time'] = photo['upload_time'].strftime('%Y-%m-%d %H:%M:%S')
+
         cursor.close()
         conn.close()
 
@@ -337,6 +344,13 @@ def get_album_photos(album_id):
                  LIMIT %s OFFSET %s'''
         cursor.execute(sql, (album_id, page_size, offset))
         photos = cursor.fetchall()
+
+        for photo in photos:
+            if photo.get('shoot_time'):
+                photo['shoot_time'] = photo['shoot_time'].strftime('%Y-%m-%d %H:%M:%S')
+
+            if photo.get('upload_time'):
+                photo['upload_time'] = photo['upload_time'].strftime('%Y-%m-%d %H:%M:%S')
 
         # 2. 查询总条数（判断是否有更多数据）
         cursor.execute('SELECT COUNT(*) as total FROM photo WHERE album_id = %s', (album_id,))

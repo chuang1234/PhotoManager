@@ -14,6 +14,7 @@ import {
   Spin,
   Pagination,
   Tooltip,
+  Dropdown,
 } from "antd";
 import {
   UploadOutlined,
@@ -21,11 +22,14 @@ import {
   SearchOutlined,
   DeleteOutlined,
   QuestionCircleOutlined,
+  EllipsisOutlined,
+  StarFilled,
 } from "@ant-design/icons";
 import request from "../../utils/request";
 import moment from "moment";
 import styles from "./index.module.less";
 import FilterPopwin from "./popwin/FilterPopwin";
+import { formatTime } from "../../utils/dateUtil";
 
 const AlbumDetail = () => {
   const { albumId } = useParams();
@@ -198,7 +202,7 @@ const AlbumDetail = () => {
       const values = form.getFieldsValue();
       const userShootTime = values.shootTime
         ? moment(values.shootTime).format("YYYY-MM-DD HH:mm:ss")
-        : "";
+        : null;
       const defaultShootTime =
         userShootTime ||
         (file?.lastModified
@@ -243,6 +247,31 @@ const AlbumDetail = () => {
     },
   };
 
+  const getPhotoMenuItems = (photoId) => {
+    return [
+      {
+        key: "delete",
+        icon: <DeleteOutlined />,
+        danger: true, // 标记危险操作（红色）
+        label: (
+          <Popconfirm
+            title="确定删除这张照片吗？删除后无法恢复！"
+            onConfirm={() => handleDeletePhoto(photoId)}
+            okText="确认"
+            cancelText="取消"
+          >
+            <span>删除照片</span>
+          </Popconfirm>
+        ),
+      },
+      {
+        key: "star",
+        icon: <StarFilled style={{ color: "#f1b260ba" }} />,
+        label: <a onClick={() => message.success("收藏成功！")}>收藏照片</a>,
+      },
+    ];
+  };
+
   return (
     <div className={styles.albumDetail}>
       {/* 顶部操作栏 */}
@@ -283,6 +312,19 @@ const AlbumDetail = () => {
               {filteredPhotos.length > 0
                 ? filteredPhotos.map((photo) => (
                     <div className={styles.photoItem} key={photo.id}>
+                      <div className={styles.photoMoreBtn}>
+                        <Dropdown
+                          menu={{ items: getPhotoMenuItems(photo.id) }}
+                          trigger={["click"]}
+                        >
+                          <Button
+                            shape="circle"
+                            icon={<EllipsisOutlined />}
+                            size="small"
+                            className={styles.moreBtn}
+                          />
+                        </Dropdown>
+                      </div>
                       <div className={styles.imgContainer}>
                         <Image
                           width="100%"
@@ -294,41 +336,42 @@ const AlbumDetail = () => {
                         />
                       </div>
                       <div className={styles.photoInfo}>
-                        <p
+                        <div
                           className={styles.photoName}
                           title={photo.photo_name}
                         >
-                          {photo.photo_name}
-                        </p>
-                        <p className={styles.photoMeta}>
-                          上传者：{photo.operator_name || "未知"}
-                          {photo.remarks && (
-                            <Tooltip title={photo.remarks}>
-                              <QuestionCircleOutlined />
-                            </Tooltip>
-                          )}
-                        </p>
-                        {photo.member_name && (
-                          <p className={styles.photoMeta}>
-                            归属：{photo.member_name}
-                          </p>
-                        )}
-                        <Popconfirm
-                          title="确定删除这张照片吗？"
-                          onConfirm={() => handleDeletePhoto(photo.id)}
-                          okText="确认"
-                          cancelText="取消"
-                          disabled={deleteLoading}
+                          名称：{photo.photo_name}
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                          }}
                         >
-                          <Button
-                            type="text"
-                            icon={<DeleteOutlined />}
-                            className={styles.deleteBtn}
-                            size="small"
-                          >
-                            删除
-                          </Button>
-                        </Popconfirm>
+                          <div className={styles.photoMeta}>
+                            上传者：{photo.operator_name || "未知"}
+                            {photo.remarks && (
+                              <Tooltip title={photo.remarks}>
+                                <QuestionCircleOutlined />
+                              </Tooltip>
+                            )}
+                          </div>
+
+                          {photo.member_name && (
+                            <div className={styles.photoMeta}>
+                              归属：{photo.member_name}
+                            </div>
+                          )}
+                        </div>
+                        <div style={{ textAlign: "left" }}>
+                          <div className={styles.photoMeta}>
+                            拍摄时间：{formatTime(photo.shoot_time) || "未知"}
+                          </div>
+
+                          <div className={styles.photoMeta}>
+                            上传时间：{formatTime(photo.upload_time) || "未知"}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ))

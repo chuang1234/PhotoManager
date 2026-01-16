@@ -130,8 +130,32 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
           }
 
+          .photoMoreBtn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            opacity: 0; // 默认隐藏，hover时显示
+            transition: opacity 0.2s ease;
+          }
+          // hover照片时显示三点按钮
+          &:hover .photoMoreBtn {
+            opacity: 1;
+          }
+
+          // 三点按钮样式优化
+          .moreBtn {
+            background: rgba(0, 0, 0, 0.5); // 半透黑背景
+            color: #fff;
+            border: none;
+            width: 24px;
+            height: 24px;
+            &:hover {
+              background: rgba(0, 0, 0, 0.7); // hover加深背景
+            }
+          }
+
           .imgContainer {
-            width: 200px;
+            width: 220px;
             height: 150px;
             border-radius: 8px;
             overflow: hidden; // 裁剪超出部分
