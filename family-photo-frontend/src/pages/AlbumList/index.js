@@ -1,27 +1,28 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
   Card,
-  Modal,
   Input,
-  Popconfirm,
-  Upload,
   message,
+  Modal,
+  Popconfirm,
   Space,
   Typography,
+  Upload,
 } from "antd";
 import {
-  EditOutlined,
   DeleteOutlined,
-  UploadOutlined,
-  PlusOutlined,
+  EditOutlined,
   FolderOpenOutlined,
+  HeartOutlined,
+  PlusOutlined,
+  UploadOutlined,
 } from "@ant-design/icons";
 import request from "../../utils/request";
 import styles from "./index.module.less";
-import moment from "moment";
 import { formatTime } from "../../utils/dateUtil";
+import ButtonWrapper from "../../components/ButtonWrapper";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -187,13 +188,23 @@ const AlbumList = () => {
         <Title level={2} className={styles.pageTitle}>
           <FolderOpenOutlined /> 我的相册
         </Title>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={() => navigate("/create-album")} // 跳转到创建相册页面（可自行实现）
-        >
-          创建新相册
-        </Button>
+        <ButtonWrapper>
+          <Button
+            icon={<HeartOutlined />}
+            type="primary"
+            onClick={() => navigate("/favorite")}
+            className={styles.favoriteBtn}
+          >
+            我的收藏
+          </Button>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => navigate("/create-album")} // 跳转到创建相册页面（可自行实现）
+          >
+            创建新相册
+          </Button>
+        </ButtonWrapper>
       </div>
 
       {/* 相册列表 */}

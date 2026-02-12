@@ -24,12 +24,15 @@ import {
   QuestionCircleOutlined,
   EllipsisOutlined,
   StarFilled,
+  HeartOutlined,
 } from "@ant-design/icons";
 import request from "../../utils/request";
 import moment from "moment";
 import styles from "./index.module.less";
 import FilterPopwin from "./popwin/FilterPopwin";
 import { formatTime } from "../../utils/dateUtil";
+import { useMember } from "../../contexts/MemberContext";
+import FavoriteConfirmModal from "./popwin/FavoriteConfirmModal";
 
 const AlbumDetail = () => {
   const { albumId } = useParams();
@@ -54,8 +57,13 @@ const AlbumDetail = () => {
 
   // 弹窗状态
   const [searchModalVisible, setSearchModalVisible] = useState(false);
+  const [favoriteCfmVisible, setFavoriteCfmVisible] = useState(false);
 
   const [searchParams, setSearchParams] = useState({});
+  const [folders, setFolders] = useState([]); // 收藏夹列表
+  const [favoritePhotoId, setFavoritePhotoId] = useState(null); // 收藏照片ID
+
+  const { currentMember } = useMember();
 
   // 获取家庭成员
   const fetchMembers = useCallback(() => {
@@ -65,6 +73,20 @@ const AlbumDetail = () => {
       }
     });
   }, []);
+
+  const fetchFolders = async () => {
+    try {
+      const res = await request.get("/api/favorite/folders", {
+        params: { member_id: currentMember.member_id },
+      });
+      if (res.code === 200) {
+        setFolders(res.data);
+      }
+    } catch (err) {
+      message.error("获取收藏夹失败，请重试");
+      console.error(err);
+    }
+  };
 
   // 加载照片（分页版，移除滚动相关逻辑）
   const fetchPhotos = useCallback(
@@ -126,6 +148,12 @@ const AlbumDetail = () => {
     fetchMembers();
     fetchPhotos(false); // 加载第一页普通照片
   }, [fetchMembers]); // 依赖仅保留fetchMembers（无频繁变化）
+
+  useEffect(() => {
+    if (currentMember) {
+      fetchFolders();
+    }
+  }, [currentMember]);
 
   // 页码变化时加载对应页数据
   useEffect(() => {
@@ -247,7 +275,40 @@ const AlbumDetail = () => {
     },
   };
 
-  const getPhotoMenuItems = (photoId) => {
+  const onFavoritePhoto = (photoId) => {
+    setFavoritePhotoId(photoId);
+    setFavoriteCfmVisible(true);
+  };
+
+  const onCancelFavoritePhoto = (photo) => {
+    const folder = folders.find(
+      (folder) => folder.id === photo.favorite_folder_id,
+    );
+    Modal.confirm({
+      title: `确定从【${folder.folder_name}】取消这张照片的收藏吗？`,
+      onOk: () => {
+        request
+          .delete("/api/favorite/photos", {
+            data: { photo_id: photo.id, folder_id: photo.favorite_folder_id },
+          })
+          .then(() => {
+            message.success("取消收藏成功");
+            fetchPhotos(isSearch, searchParams);
+          });
+      },
+    });
+  };
+
+  const getPhotoMenuItems = (photo) => {
+    if (photo.favorite_folder_id) {
+      return [
+        {
+          key: "star",
+          icon: <StarFilled style={{ color: "#b7b6b6" }} />,
+          label: <a onClick={() => onCancelFavoritePhoto(photo)}>取消收藏</a>,
+        },
+      ];
+    }
     return [
       {
         key: "delete",
@@ -256,7 +317,7 @@ const AlbumDetail = () => {
         label: (
           <Popconfirm
             title="确定删除这张照片吗？删除后无法恢复！"
-            onConfirm={() => handleDeletePhoto(photoId)}
+            onConfirm={() => handleDeletePhoto(photo.is)}
             okText="确认"
             cancelText="取消"
           >
@@ -267,9 +328,22 @@ const AlbumDetail = () => {
       {
         key: "star",
         icon: <StarFilled style={{ color: "#f1b260ba" }} />,
-        label: <a onClick={() => message.success("收藏成功！")}>收藏照片</a>,
+        label: <a onClick={() => onFavoritePhoto(photo.id)}>收藏照片</a>,
       },
     ];
+  };
+
+  const onConfirmFavorite = async (folderId) => {
+    // 调用加入收藏夹接口
+    await request.post("/api/favorite/photos", {
+      photo_id: favoritePhotoId,
+      folder_id: folderId,
+      member_id: currentMember.member_id,
+    });
+    message.success("加入收藏夹成功");
+    setFavoriteCfmVisible(false);
+    setFavoritePhotoId(null);
+    fetchPhotos(isSearch, searchParams);
   };
 
   return (
@@ -290,6 +364,13 @@ const AlbumDetail = () => {
           onClick={() => setSearchModalVisible(true)}
         >
           搜索照片
+        </Button>
+        <Button
+          icon={<HeartOutlined />}
+          type="primary"
+          onClick={() => navigate(`/favorite?fromAlbumId=${albumId}`)}
+        >
+          我的收藏
         </Button>
       </div>
 
@@ -314,7 +395,7 @@ const AlbumDetail = () => {
                     <div className={styles.photoItem} key={photo.id}>
                       <div className={styles.photoMoreBtn}>
                         <Dropdown
-                          menu={{ items: getPhotoMenuItems(photo.id) }}
+                          menu={{ items: getPhotoMenuItems(photo) }}
                           trigger={["click"]}
                         >
                           <Button
@@ -371,6 +452,14 @@ const AlbumDetail = () => {
                           <div className={styles.photoMeta}>
                             上传时间：{formatTime(photo.upload_time) || "未知"}
                           </div>
+                          {photo.favorite_folder_id && (
+                            <div className={styles.photoMeta}>
+                              收藏夹：
+                              {folders.find(
+                                (p) => p.id === photo.favorite_folder_id,
+                              )?.folder_name || "未知"}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -457,6 +546,18 @@ const AlbumDetail = () => {
           handleResetSearch={handleResetSearch}
           handleSearch={handleSearch}
           setSearchParams={setSearchParams}
+        />
+      )}
+      {favoriteCfmVisible && (
+        <FavoriteConfirmModal
+          favoriteCfmVisible={favoriteCfmVisible}
+          setFavoriteCfmVisible={setFavoriteCfmVisible}
+          onConfirm={onConfirmFavorite}
+          onCancel={() => {
+            setFavoriteCfmVisible(false);
+            setFavoritePhotoId(null);
+          }}
+          folders={folders}
         />
       )}
     </div>
