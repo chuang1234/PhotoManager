@@ -1,0 +1,233 @@
+// 全局变量（统一温馨可爱风格）
+@primary-color: #d49999;    // 豆沙粉主色
+@primary-hover: #c78888;    // 主色hover
+@neutral-100: #fff;         // 纯白
+@neutral-200: #f9f7f3;      // 奶白
+@neutral-300: #e8d8c4;      // 浅暖棕
+@neutral-400: #b8a99c;      // 浅棕
+@neutral-600: #5a4b38;      // 深暖棕
+@border-radius-sm: 8px;
+@border-radius-md: 20px;    // 超大圆角
+@border-radius-lg: 28px;
+@transition-base: all 0.3s ease-in-out;
+
+.uploadArea {
+  width: 360px; // 固定宽度，适配右侧栏
+  background: linear-gradient(120deg, #fff 0%, #f9f7f3 100%); // 暖调渐变背景
+  border-radius: @border-radius-lg; // 超大圆角
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(212, 153, 153, 0.15); // 暖调柔和阴影
+  border: 2px solid #ffd9d9; // 浅粉边框
+  font-family: "幼圆", "Microsoft YaHei", "Comic Sans MS", sans-serif;
+
+  // 收起/展开标题
+  .uploadSimpleTitle, .uploadTitle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 18px;
+    font-weight: 600;
+    color: @primary-color;
+    cursor: pointer;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f8ece0; // 暖调分割线
+    margin-bottom: 20px;
+    transition: @transition-base;
+
+    &:hover {
+      color: @primary-hover;
+      transform: scale(1.01);
+    }
+
+    .icon {
+      font-size: 16px;
+      color: @primary-color;
+      transition: @transition-base;
+
+      &:hover {
+        transform: rotate(180deg);
+        color: @primary-hover;
+      }
+    }
+  }
+
+  .uploadSimpleTitle {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+
+  // 上传表单
+  .uploadForm {
+    // 统一表单项样式
+    .formItem {
+      margin-bottom: 20px;
+
+      .ant-form-item-label > label {
+        font-weight: 600;
+        color: @neutral-600;
+        font-size: 15px;
+        line-height: 1.6;
+      }
+    }
+
+    // 输入框样式
+    .formInput {
+      border-radius: @border-radius-sm; // 大圆角
+      border: 2px solid @neutral-300; // 暖调边框
+      height: 48px; // 更高更舒适
+      font-size: 15px;
+      padding: 0 16px;
+      transition: @transition-base;
+      background-color: #fff;
+
+      &:focus, &:hover {
+        border-color: @primary-color;
+        box-shadow: 0 0 0 4px rgba(212, 153, 153, 0.1); // 暖调外发光
+        outline: none;
+        transform: scale(1.01);
+      }
+
+      &::placeholder {
+        color: @neutral-300;
+        font-style: italic; // 斜体更温柔
+      }
+    }
+
+    // 日期选择器样式
+    .formPicker {
+      border-radius: @border-radius-sm;
+      border: 2px solid @neutral-300;
+      height: 48px;
+      font-size: 15px;
+      transition: @transition-base;
+
+      &:focus, &:hover {
+        border-color: @primary-color;
+        box-shadow: 0 0 0 4px rgba(212, 153, 153, 0.1);
+      }
+
+      .ant-picker-input input::placeholder {
+        color: @neutral-300;
+        font-style: italic;
+      }
+    }
+
+    // 下拉选择器样式
+    .formSelect {
+      .ant-select-selector {
+        border-radius: @border-radius-sm !important;
+        border: 2px solid @neutral-300 !important;
+        height: 48px !important;
+        font-size: 15px;
+        transition: @transition-base;
+
+        &:focus, &:hover {
+          border-color: @primary-color !important;
+          box-shadow: 0 0 0 4px rgba(212, 153, 153, 0.1) !important;
+        }
+      }
+
+      .ant-select-selection-placeholder {
+        color: @neutral-300;
+        font-style: italic;
+      }
+    }
+
+    // 文本域样式
+    .formTextarea {
+      border-radius: @border-radius-sm;
+      border: 2px solid @neutral-300;
+      font-size: 15px;
+      transition: @transition-base;
+
+      &:focus, &:hover {
+        border-color: @primary-color;
+        box-shadow: 0 0 0 4px rgba(212, 153, 153, 0.1);
+        transform: scale(1.01);
+      }
+
+      &::placeholder {
+        color: @neutral-300;
+        font-style: italic;
+      }
+    }
+
+    // 按钮容器
+    .btnItem {
+      margin-top: 8px;
+    }
+
+    // 上传按钮
+    .uploadBtn {
+      width: 100%;
+      height: 52px; // 更高更舒适
+      border-radius: @border-radius-sm; // 大圆角
+      font-weight: 600;
+      font-size: 16px;
+      background-color: @primary-color;
+      border-color: @primary-color;
+      border-width: 2px;
+      transition: @transition-base;
+
+      &:not(:disabled) {
+        &:hover {
+          background-color: @primary-hover;
+          border-color: @primary-hover;
+          transform: scale(1.02); // 轻微放大
+          box-shadow: 0 8px 16px rgba(212, 153, 153, 0.3); // 暖调阴影
+        }
+
+        &:active {
+          transform: scale(0.98); // 轻微缩小
+        }
+      }
+
+      &:disabled {
+        background-color: @neutral-300 !important;
+        border-color: @neutral-300 !important;
+        color: #fff !important;
+        cursor: not-allowed;
+        opacity: 0.8;
+      }
+    }
+  }
+
+  // 响应式适配（移动端）
+  @media (max-width: 768px) {
+    width: 100%; // 移动端宽度100%
+    padding: 20px;
+    border-radius: @border-radius-md;
+
+    .uploadForm {
+      .formInput, .formPicker {
+        height: 44px;
+        font-size: 14px;
+      }
+
+      .formSelect {
+        .ant-select-selector {
+          height: 44px !important;
+          font-size: 14px !important;
+        }
+      }
+
+      .uploadBtn {
+        height: 48px;
+        font-size: 15px;
+      }
+    }
+  }
+
+  // 超小屏适配
+  @media (max-width: 480px) {
+    padding: 16px;
+
+    .uploadSimpleTitle, .uploadTitle {
+      font-size: 16px;
+    }
+
+    .formItem {
+      margin-bottom: 16px;
+    }
+  }
+}

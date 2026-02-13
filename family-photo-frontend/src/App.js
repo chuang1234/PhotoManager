@@ -11,9 +11,9 @@ import PrivateRoute from "./components/PrivateRoute";
 import { MemberProvider } from "./contexts/MemberContext"; // 引入成员上下文
 import { ConfigProvider, Layout, Button, message } from "antd";
 import zhCN from "antd/locale/zh_CN";
-import HeaderComponent from "./components/HeaderComponent";
 import CreateAlbum from "./pages/CreateAlbum";
 import FavoriteManager from "./pages/FavoriteManager";
+import HeaderComponent from "./components/HeaderComponent";
 
 const { Content } = Layout;
 

@@ -2,7 +2,12 @@
   padding: 24px;
   max-width: 1200px;
   margin: 0 auto;
-  font-family: "Microsoft YaHei", sans-serif;
+  // 圆润字体+温馨底色
+  font-family: "幼圆", "Microsoft YaHei", sans-serif;
+  background-color: #f9f7f3;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3z' fill='%23e8d8c4' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E");
+  min-height: calc(100vh - 48px);
+  border-radius: 16px;
 
   // 页面头部
   .pageHeader {
@@ -11,14 +16,32 @@
     align-items: center;
     margin-bottom: 32px;
     padding-bottom: 16px;
-    border-bottom: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0e6d8; // 暖色调分割线
 
     .pageTitle {
       margin: 0;
-      color: #1f2937;
+      color: #d49999; // 豆沙粉标题
       display: flex;
       align-items: center;
       gap: 8px;
+      font-weight: 500;
+      // 可爱小装饰
+      &::after {
+        content: "✨";
+        margin-left: 8px;
+        font-size: 18px;
+      }
+    }
+
+    .favoriteBtn {
+      background-color: #f8ece0; // 浅橙底色
+      border-color: #e8c8a0;
+      color: #d49999;
+      &:hover {
+        background-color: #f0e0cd;
+        border-color: #d8b890;
+        color: #c78888;
+      }
     }
   }
 
@@ -32,20 +55,36 @@
       grid-column: 1 / -1;
       text-align: center;
       padding: 60px 0;
-      color: #6b7280;
+      color: #b8a99c; // 暖棕色提示文字
       font-size: 16px;
+
+      // 加载/空状态可爱图标
+      &::before {
+        content: "📸";
+        display: block;
+        font-size: 48px;
+        margin-bottom: 16px;
+      }
+    }
+
+    .emptyTip {
+      &::before {
+        content: "📂";
+      }
     }
   }
 
   // 相册卡片
   .albumCard {
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border-radius: 20px !important; // 大圆角更可爱
+    box-shadow: 0 6px 16px rgba(222, 208, 191, 0.25); // 柔和暖阴影
+    border: 1px solid #f0e6d8;
     transition: all 0.3s ease;
+    background-color: #fff;
 
     &:hover {
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-      transform: translateY(-4px);
+      box-shadow: 0 10px 20px rgba(222, 208, 191, 0.35); // 悬浮加深阴影
+      transform: translateY(-6px); // 悬浮上移更灵动
     }
 
     // 封面区域
@@ -53,8 +92,8 @@
       position: relative;
       height: 200px;
       overflow: hidden;
-      border-top-left-radius: 12px;
-      border-top-right-radius: 12px;
+      border-top-left-radius: 20px !important;
+      border-top-right-radius: 20px !important;
 
       .coverImg {
         width: 100%;
@@ -70,7 +109,7 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.5);
+        background: rgba(249, 247, 243, 0.75); // 暖色调半透明遮罩
         display: flex;
         justify-content: center;
         align-items: center;
@@ -78,16 +117,18 @@
         transition: opacity 0.3s ease;
 
         .coverActionBtn {
-          color: #fff;
+          color: #8a7d6f; // 暖棕色按钮文字
           font-size: 14px;
+          border-radius: 8px;
           &:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(248, 236, 224, 0.8); // 浅橙悬浮背景
+            color: #d49999;
           }
           &.dangerBtn {
-            color: #ef4444;
+            color: #e57373; // 柔和红色
             &:hover {
-              color: #dc2626;
-              background: rgba(239, 68, 68, 0.2);
+              color: #d32f2f;
+              background: rgba(248, 236, 224, 0.8);
             }
           }
         }
@@ -106,7 +147,8 @@
     // 相册名称
     .albumName {
       font-size: 18px;
-      color: #1f2937;
+      color: #8a7d6f; // 暖棕色名称
+      font-weight: 500;
     }
 
     // 相册元信息
@@ -114,17 +156,27 @@
       .metaItem {
         margin: 4px 0;
         font-size: 12px;
-        color: #6b7280;
+        color: #b8a99c; // 浅暖棕色元信息
         line-height: 1.4;
       }
     }
 
     // 操作按钮
     .ant-card-actions {
-      background: #f9fafb;
-      border-bottom-left-radius: 12px;
-      border-bottom-right-radius: 12px;
+      background: #f9f7f3; // 卡片底部暖底色
+      border-bottom-left-radius: 20px !important;
+      border-bottom-right-radius: 20px !important;
       justify-content: center;
+      border-top: 1px solid #f0e6d8;
+
+      button {
+        color: #d49999;
+        border-color: #e8c8a0;
+        &:hover {
+          background-color: #f8ece0;
+          color: #c78888;
+        }
+      }
     }
   }
 
@@ -136,10 +188,22 @@
   // 响应式适配
   @media (max-width: 768px) {
     padding: 16px;
+    border-radius: 0;
+    min-height: 100vh;
 
     .albumCardList {
       grid-template-columns: 1fr;
       gap: 16px;
+    }
+
+    .pageHeader {
+      flex-direction: column;
+      gap: 16px;
+      align-items: flex-start;
+
+      .pageTitle {
+        font-size: 20px;
+      }
     }
   }
 }

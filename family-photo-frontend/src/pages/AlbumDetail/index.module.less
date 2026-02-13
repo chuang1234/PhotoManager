@@ -1,33 +1,99 @@
-// index.module.less
+// 全局变量（温馨可爱风格统一）
+@primary-color: #d49999;    // 豆沙粉主色
+@primary-hover: #c78888;    // 主色hover
+@danger-color: #e57373;     // 柔和浅红
+@danger-hover: #d36363;     // 浅红hover
+@neutral-100: #fff;         // 纯白
+@neutral-200: #f9f7f3;      // 奶白
+@neutral-300: #e8d8c4;      // 浅暖棕
+@neutral-400: #b8a99c;      // 浅棕
+@neutral-600: #5a4b38;      // 深暖棕
+@border-radius-sm: 8px;
+@border-radius-md: 20px;    // 超大圆角
+@border-radius-lg: 28px;
+@transition-base: all 0.3s ease-in-out;
+
 .albumDetail {
   padding: 24px;
   max-width: 1920px;
   margin: 0 auto;
-  font-family: "Microsoft YaHei", sans-serif;
-  color: #333;
+  // 圆润可爱字体
+  font-family: "幼圆", "Microsoft YaHei", "Comic Sans MS", sans-serif;
+  color: @neutral-600;
+  background-color: @neutral-200; // 暖调页面背景
 
+  // 顶部操作栏
   .topBar {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
+    gap: 16px; // 更宽松的间距
+    margin-bottom: 24px;
+
+    .backBtn {
+      height: 40px;
+      padding: 0 20px;
+      border-radius: @border-radius-md;
+      background-color: #f8ece0;
+      border: 2px solid @primary-color;
+      color: @primary-color;
+      transition: @transition-base;
+
+      &:hover {
+        background-color: @primary-color !important;
+        border-color: @primary-color !important;
+        color: #fff !important;
+        transform: scale(1.02);
+        box-shadow: 0 4px 8px rgba(212, 153, 153, 0.2);
+      }
+    }
 
     .searchBtn {
-      height: 32px;
-      border-radius: 6px;
+      height: 40px;
+      padding: 0 20px;
+      border-radius: @border-radius-md;
+      border: 2px solid @neutral-300;
+      background-color: #fff;
+      color: @neutral-600;
+      transition: @transition-base;
+
       &:hover {
-        border-color: #1677ff;
-        color: #1677ff;
+        border-color: @primary-color;
+        color: @primary-color;
+        transform: scale(1.02);
+        box-shadow: 0 4px 8px rgba(212, 153, 153, 0.1);
+      }
+    }
+
+    .favoriteBtn {
+      height: 40px;
+      padding: 0 20px;
+      border-radius: @border-radius-md;
+      background-color: @primary-color;
+      border: 2px solid @primary-color;
+      color: #fff;
+      transition: @transition-base;
+
+      &:hover {
+        background-color: @primary-hover;
+        border-color: @primary-hover;
+        transform: scale(1.02);
+        box-shadow: 0 4px 8px rgba(212, 153, 153, 0.3);
       }
     }
   }
 
   // 标题样式
   .pageTitle {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: 600;
     margin-bottom: 24px;
-    color: #1f2937;
+    color: @primary-color;
+    text-align: center; // 居中更温馨
+    letter-spacing: 1px;
+
+    &:hover {
+      color: @primary-hover;
+    }
   }
 
   // 加载中样式
@@ -39,7 +105,7 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    color: #6b7280;
+    color: @neutral-400;
     font-size: 14px;
   }
 
@@ -47,64 +113,62 @@
   .emptyTip {
     width: 100%;
     text-align: center;
-    padding: 40px 0;
-    color: #6b7280;
-    font-size: 14px;
-  }
-
-  // 返回按钮样式
-  .backBtn {
-    &:hover {
-      background-color: #1677ff !important;
-      border-color: #1677ff !important;
-    }
+    padding: 60px 0;
+    color: @neutral-400;
+    font-size: 16px;
+    font-weight: 500;
+    background-color: #fff;
+    border-radius: @border-radius-md;
+    margin: 20px 0;
+    box-shadow: 0 2px 8px rgba(212, 153, 153, 0.1);
   }
 
   .albumShow {
     display: flex;
-    gap: 24px; // 左右栏间距
+    gap: 24px;
     align-items: flex-start;
 
     .albumShowLeft {
+      flex: 1;
+      background: linear-gradient(120deg, #fff 0%, #f9f7f3 100%); // 暖调渐变
+      border-radius: @border-radius-lg; // 超大圆角
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(212, 153, 153, 0.15); // 暖调柔和阴影
+      border: 2px solid #ffd9d9; // 浅粉边框
 
-      flex: 1; // 替换固定宽度，自适应
-      background: #f9fafb;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-
-      // 新增：照片列表容器（包裹列表+遮罩）
+      // 照片列表容器
       .photoListContainer {
-        position: relative; // 遮罩的直接父容器，必须相对定位
-        min-height: calc(100vh - 220px); // 关键：基于视口高度计算，确保足够高
-        width: 100%; // 宽度100%
-        box-sizing: border-box; // 防止padding撑大容器
+        position: relative;
+        min-height: calc(100vh - 220px);
+        width: 100%;
+        box-sizing: border-box;
       }
 
-      // 新增：loading 遮罩样式（核心）
+      // loading 遮罩样式
       .loadingMask {
         position: absolute;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
-        background: rgba(255, 255, 255, 0.7); // 半透明白色遮罩
+        background: rgba(255, 255, 255, 0.85); // 更柔和的遮罩
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        gap: 12px;
-        z-index: 10; // 确保遮罩在最上层
-        border-radius: 12px;
+        gap: 16px;
+        z-index: 10;
+        border-radius: @border-radius-lg;
 
-        .ant-spin {
-          font-size: 24px;
-          color: #1677ff; // loading 图标颜色
+        .loadingSpin {
+          color: @primary-color; // 暖调loading颜色
+          font-size: 32px;
         }
 
         span {
-          font-size: 14px;
-          color: #6b7280;
+          font-size: 16px;
+          color: @neutral-400;
+          font-weight: 500;
         }
       }
 
@@ -112,245 +176,191 @@
       .photoList {
         display: flex;
         flex-wrap: wrap;
-        gap: 12px;
+        gap: 20px; // 更宽松的间距
 
         .photoItem {
-          width: calc(25% - 9px);
-          padding: 12px;
-          border-radius: 12px;
-          transition: all 0.3s ease;
+          width: calc(25% - 15px); // 适配gap调整宽度
+          padding: 16px;
+          border-radius: @border-radius-md; // 超大圆角
+          transition: @transition-base;
           background: #fff;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+          box-shadow: 0 4px 12px rgba(212, 153, 153, 0.1); // 暖调阴影
           display: flex;
           flex-direction: column;
-          align-items: center; // 整个列表项内容居中
+          align-items: center;
           position: relative;
+          border: 2px solid #f8ece0; // 浅橙边框
 
           &:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px); // 更灵动的hover上移
+            box-shadow: 0 8px 20px rgba(212, 153, 153, 0.2);
+            border-color: #ffd9d9;
           }
 
           .photoMoreBtn {
             position: absolute;
-            top: 8px;
-            right: 8px;
-            opacity: 0; // 默认隐藏，hover时显示
+            top: 10px;
+            right: 10px;
+            opacity: 0;
             transition: opacity 0.2s ease;
           }
-          // hover照片时显示三点按钮
+
           &:hover .photoMoreBtn {
             opacity: 1;
           }
 
           // 三点按钮样式优化
           .moreBtn {
-            background: rgba(0, 0, 0, 0.5); // 半透黑背景
+            background: rgba(212, 153, 153, 0.8); // 暖调半透明背景
             color: #fff;
             border: none;
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            transition: @transition-base;
+
             &:hover {
-              background: rgba(0, 0, 0, 0.7); // hover加深背景
+              background: @primary-color;
+              transform: scale(1.1);
             }
           }
 
           .imgContainer {
-            width: 220px;
-            height: 150px;
-            border-radius: 8px;
-            overflow: hidden; // 裁剪超出部分
+            width: 100%; // 自适应宽度
+            max-width: 220px;
+            height: 160px; // 稍高更舒适
+            border-radius: @border-radius-sm;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: #f5f5f5; // 图片加载前的背景色
-            border: 1px solid #eee;
+            background-color: #f8ece0; // 暖调背景色
+            border: 2px solid #ffd9d9; // 浅粉边框
+            margin-bottom: 12px;
+
+            &:hover {
+              box-shadow: 0 4px 8px rgba(212, 153, 153, 0.2);
+            }
           }
 
           .photoImg {
-            border-radius: 6px;
-            transition: all 0.3s ease;
-            border: 1px solid #f0f0f0;
-
-            object-fit: cover !important; // 核心：保持比例，填充容器
+            border-radius: @border-radius-sm;
+            transition: @transition-base;
+            border: none;
+            object-fit: cover !important;
 
             &:hover {
-              transform: scale(1.02);
+              transform: scale(1.05); // 更明显的放大
             }
           }
 
           .photoInfo {
-            margin-top: 8px;
+            margin-top: 4px;
             text-align: center;
-
             position: relative;
             padding-bottom: 8px;
-
-            width: 90%;
-
-            .deleteBtn {
-              color: #ef4444;
-              margin-top: 4px;
-              &:hover {
-                color: #dc2626;
-                background-color: #fef2f2;
-              }
-            }
+            width: 100%;
 
             .photoName {
-              font-size: 14px;
-              font-weight: 500;
-              margin: 0 0 4px 0;
-              color: #1f2937;
+              font-size: 15px;
+              font-weight: 600;
+              margin: 0 0 6px 0;
+              color: @neutral-600;
               white-space: nowrap;
               overflow: hidden;
               text-overflow: ellipsis;
             }
 
             .photoMeta {
-              font-size: 12px;
-              color: #6b7280;
+              font-size: 13px;
+              color: @neutral-400;
               margin: 0;
-              line-height: 1.4;
+              line-height: 1.6;
+
+              &:hover {
+                color: @primary-color;
+              }
             }
           }
         }
       }
+
       // 分页组件样式
       .pagination {
         width: 100%;
         text-align: center;
-        padding: 20px 0;
-        .ant-pagination {
-          display: inline-block;
+        padding: 24px 0 8px;
+
+        .paginationComponent {
+          .ant-pagination-item {
+            border-radius: 8px;
+            border-color: @neutral-300;
+            margin: 0 4px;
+
+            &:hover {
+              border-color: @primary-color;
+            }
+
+            &.ant-pagination-item-active {
+              background-color: @primary-color;
+              border-color: @primary-color;
+              a {
+                color: #fff;
+              }
+            }
+          }
+
+          .ant-pagination-prev, .ant-pagination-next {
+            border-radius: 8px;
+            border-color: @neutral-300;
+
+            &:hover {
+              border-color: @primary-color;
+              color: @primary-color;
+            }
+          }
+
+          .ant-pagination-total-text {
+            color: @neutral-400;
+            font-weight: 500;
+            margin-right: 12px;
+          }
         }
       }
     }
 
     .albumShowRight {
-
-      .uploadArea {
-
-        width: 360px; // 固定宽度，更合理
-        background: #fff;
-        border-radius: 12px;
-        padding: 20px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-        border: 1px solid #f0f0f0;
-
-        .uploadTitle {
-          display: flex;
-          justify-content: space-between;
-          font-size: 16px;
-          font-weight: 600;
-          margin-bottom: 16px;
-          color: #1f2937;
-          padding-bottom: 8px;
-          border-bottom: 1px solid #f0f0f0;
-          cursor: pointer;
-        }
-
-        .uploadSimpleTitle {
-          display: flex;
-          justify-content: space-between;
-          font-size: 16px;
-          font-weight: 600;
-          color: #1f2937;
-          cursor: pointer;
-        }
-
-        .ant-form {
-          .ant-form-item {
-            margin-bottom: 16px;
-
-            .ant-form-item-label {
-              font-weight: 500;
-              color: #4b5563;
-            }
-
-            .ant-input,
-            .ant-input-textarea,
-            .ant-select-selector,
-            .ant-picker {
-              border-radius: 6px;
-              border: 1px solid #e5e7eb;
-              transition: all 0.2s ease;
-
-              &:focus,
-              &:hover {
-                border-color: #93c5fd;
-                box-shadow: 0 0 0 2px rgba(147, 197, 253, 0.2);
-              }
-            }
-          }
-
-          .uploadBtn {
-            width: 100%;
-            height: 40px;
-            border-radius: 6px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-
-            &:not(:disabled) {
-              background-color: #2563eb;
-              border-color: #2563eb;
-
-              &:hover {
-                background-color: #1d4ed8;
-                border-color: #1d4ed8;
-              }
-            }
-
-            &:disabled {
-              background-color: #94a3b8 !important;
-              border-color: #94a3b8 !important;
-              color: #fff !important;
-              cursor: not-allowed;
-            }
-          }
-        }
-      }
+      min-width: 280px; // 固定右侧宽度，更稳定
     }
+  }
 
-    // 响应式适配：小屏幕调整间距和列数
-    @media (max-width: 1200px) {
-      .albumShow {
-        .albumShowLeft {
-          .photoList {
-            :global(.ant-list-grid) {
-              grid-gap: 16px !important;
-            }
-          }
-        }
-      }
-    }
-
-    @media (max-width: 768px) {
-      .albumShow {
-        .albumShowLeft {
-          .photoList {
-            :global(.ant-list-grid) {
-              grid-template-columns: repeat(2, 1fr) !important; // 手机端 2 列
-              grid-gap: 12px !important;
-            }
-            .imgContainer {
-              width: 100%; // 自适应宽度
-              height: 180px;
-            }
-          }
+  // 响应式适配：大屏调整列数
+  @media (max-width: 1440px) {
+    .albumShowLeft {
+      .photoList {
+        .photoItem {
+          width: calc(33.33% - 13px);
         }
       }
     }
   }
 
-  // 响应式适配（小屏幕堆叠显示）
+  // 响应式适配：小屏幕调整间距和列数
   @media (max-width: 1200px) {
     .albumShow {
       flex-direction: column;
 
+      .albumShowLeft {
+        .photoList {
+          .photoItem {
+            width: calc(50% - 10px);
+          }
+        }
+      }
+
       .albumShowRight {
         width: 100%;
-        margin-top: 20px;
+        margin-top: 24px;
       }
     }
   }
@@ -358,14 +368,47 @@
   @media (max-width: 768px) {
     padding: 16px;
 
-    .albumShowLeft {
-      padding: 12px;
+    .topBar {
+      flex-wrap: wrap;
+      gap: 12px;
+
+      .backBtn, .searchBtn, .favoriteBtn {
+        flex: 1;
+        width: 100%;
+      }
     }
 
-    .photoList {
-      .ant-list-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
+    .albumShowLeft {
+      padding: 16px;
+      border-radius: @border-radius-md;
+
+      .photoList {
+        gap: 16px;
+
+        .photoItem {
+          width: 100%; // 移动端单列
+          padding: 12px;
+        }
+
+        .imgContainer {
+          height: 200px; // 移动端更高的图片容器
+        }
       }
+
+      .paginationComponent {
+        .ant-pagination-total-text {
+          display: none; // 移动端隐藏总条数，节省空间
+        }
+      }
+    }
+
+    .pageTitle {
+      font-size: 18px;
+    }
+
+    .emptyTip {
+      padding: 40px 0;
+      font-size: 14px;
     }
   }
 }

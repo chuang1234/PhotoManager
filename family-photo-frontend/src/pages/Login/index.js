@@ -23,19 +23,18 @@ const Login = () => {
         password: hashedPassword,
       });
       if (res.code === 200) {
-        // 存储Token和成员信息
         localStorage.setItem("family_photo_token", res.data.token);
         localStorage.setItem(
           "family_photo_member",
           JSON.stringify(res.data.member),
         );
-        message.success(`欢迎回来，${res.data.member.name}！`);
+        message.success(`欢迎回家，${res.data.member.name}～💖`); // 温馨提示
         window.location.href = "/";
       } else {
         message.error(res.msg);
       }
     } catch (err) {
-      message.error("登录失败，请检查网络或账号密码");
+      message.error("登录失败啦，请检查账号密码或网络～"); // 温馨提示
       console.error("登录错误：", err);
     } finally {
       setLoading(false);
@@ -44,40 +43,52 @@ const Login = () => {
 
   return (
     <div className={styles.loginContainer}>
-      <Card title="家庭相册登录" style={{ width: 350 }}>
+      {/* 温馨可爱的登录卡片 */}
+      <Card
+        title="家庭相册 温馨登录 💖"
+        className={styles.loginCard}
+        bordered={false}
+      >
         <Form
           name="login_form"
           initialValues={{ remember: true }}
           onFinish={handleLogin}
           autoComplete="off"
+          className={styles.loginForm}
         >
           <Form.Item
             name="username"
-            rules={[{ required: true, message: "请输入用户名！" }]}
+            rules={[{ required: true, message: "请输入用户名哦～" }]} // 温馨提示
+            className={styles.formItem}
           >
             <Input
-              prefix={<UserOutlined className="site-form-item-icon" />}
-              placeholder="请输入成员用户名（如father/mother）"
+              prefix={<UserOutlined className={styles.inputIcon} />}
+              placeholder="请输入你的专属用户名～（如father/mother）" // 温馨占位符
+              className={styles.loginInput}
+              size="large"
             />
           </Form.Item>
           <Form.Item
             name="password"
-            rules={[{ required: true, message: "请输入密码！" }]}
+            rules={[{ required: true, message: "请输入密码哦～" }]} // 温馨提示
+            className={styles.formItem}
           >
             <Input
-              prefix={<LockOutlined className="site-form-item-icon" />}
+              prefix={<LockOutlined className={styles.inputIcon} />}
               type="password"
-              placeholder="请输入成员密码（如father123）"
+              placeholder="请输入你的专属密码～（如father123）" // 温馨占位符
+              className={styles.loginInput}
+              size="large"
             />
           </Form.Item>
-          <Form.Item>
+          <Form.Item className={styles.btnItem}>
             <Button
               type="primary"
               htmlType="submit"
               loading={loading}
-              style={{ width: "100%" }}
+              className={styles.loginBtn}
             >
-              登录
+              登录 🔑
             </Button>
           </Form.Item>
         </Form>

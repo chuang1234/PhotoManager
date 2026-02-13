@@ -85,7 +85,7 @@ const AlbumList = () => {
         new_name: newAlbumName.trim(),
       });
       if (res.code === 200) {
-        message.success("修改名称成功");
+        message.success("修改名称成功啦 ✨");
         setRenameModalVisible(false);
         fetchAlbums(); // 刷新列表
       } else {
@@ -146,7 +146,7 @@ const AlbumList = () => {
       if (info.file.status === "done") {
         const res = info.file.response;
         if (res.code === 200) {
-          message.success("更换封面成功");
+          message.success("更换封面成功 ✨");
           // 更新当前相册的封面
           setAlbums((prev) =>
             prev.map((album) => {
@@ -186,7 +186,7 @@ const AlbumList = () => {
       {/* 页面头部 */}
       <div className={styles.pageHeader}>
         <Title level={2} className={styles.pageTitle}>
-          <FolderOpenOutlined /> 我的相册
+          <FolderOpenOutlined /> 我的家庭相册
         </Title>
         <ButtonWrapper>
           <Button
@@ -195,14 +195,14 @@ const AlbumList = () => {
             onClick={() => navigate("/favorite")}
             className={styles.favoriteBtn}
           >
-            我的收藏
+            我的收藏 💖
           </Button>
           <Button
             type="primary"
             icon={<PlusOutlined />}
             onClick={() => navigate("/create-album")} // 跳转到创建相册页面（可自行实现）
           >
-            创建新相册
+            创建新相册 📝
           </Button>
         </ButtonWrapper>
       </div>
@@ -210,13 +210,14 @@ const AlbumList = () => {
       {/* 相册列表 */}
       <div className={styles.albumCardList}>
         {loading ? (
-          <div className={styles.loadingTip}>加载中...</div>
+          <div className={styles.loadingTip}>正在加载美好的回忆...</div>
         ) : albums.length > 0 ? (
           albums.map((album) => (
             <Card
               key={album.id}
               className={styles.albumCard}
               hoverable
+              onClick={() => enterAlbum(album.id)}
               cover={
                 <div className={styles.albumCover}>
                   <img
@@ -230,7 +231,10 @@ const AlbumList = () => {
                         type="text"
                         icon={<EditOutlined />}
                         size="small"
-                        onClick={() => openRenameModal(album.id, album.name)}
+                        onClick={(e) => {
+                          e.stopPropagation(); // 阻止冒泡到Card
+                          openRenameModal(album.id, album.name);
+                        }}
                         className={styles.coverActionBtn}
                       >
                         重命名
@@ -239,23 +243,35 @@ const AlbumList = () => {
                         type="text"
                         icon={<UploadOutlined />}
                         size="small"
-                        onClick={() => openCoverUpload(album.id)}
+                        onClick={(e) => {
+                          e.stopPropagation(); // 阻止冒泡到Card
+                          openCoverUpload(album.id);
+                        }}
                         className={styles.coverActionBtn}
                       >
                         换封面
                       </Button>
                       <Popconfirm
                         title="确定删除该相册吗？删除后相册内所有照片也会被删除！"
-                        onConfirm={() => deleteAlbum(album.id)}
+                        onConfirm={(e) => {
+                          e.stopPropagation();
+                          deleteAlbum(album.id);
+                        }}
                         okText="确认"
                         cancelText="取消"
                         placement="top"
+                        okButtonProps={{
+                          style: { backgroundColor: "#e57373" },
+                        }}
+                        cancelButtonProps={{ style: { borderRadius: "8px" } }}
+                        onCancel={(e) => e.stopPropagation()}
                       >
                         <Button
                           type="text"
                           icon={<DeleteOutlined />}
                           size="small"
                           className={`${styles.coverActionBtn} ${styles.dangerBtn}`}
+                          onClick={(e) => e.stopPropagation()} // 阻止冒泡到Card
                         >
                           删除
                         </Button>
@@ -269,8 +285,14 @@ const AlbumList = () => {
                   type="primary"
                   icon={<FolderOpenOutlined />}
                   onClick={() => enterAlbum(album.id)}
+                  style={{
+                    borderRadius: "12px",
+                    backgroundColor: "#f8ece0",
+                    borderColor: "#e8c8a0",
+                    color: "#d49999",
+                  }}
                 >
-                  查看照片
+                  查看照片 📸
                 </Button>,
               ]}
             >
@@ -306,11 +328,19 @@ const AlbumList = () => {
 
       {/* 改名称弹窗 */}
       <Modal
-        title="修改相册名称"
+        title="修改相册名称 💖"
         open={renameModalVisible}
         onCancel={() => setRenameModalVisible(false)}
         onOk={confirmRename}
         destroyOnClose
+        okButtonProps={{
+          style: {
+            backgroundColor: "#d49999",
+            borderColor: "#d49999",
+            borderRadius: "8px",
+          },
+        }}
+        cancelButtonProps={{ style: { borderRadius: "8px" } }}
       >
         <Input
           value={newAlbumName}
@@ -318,6 +348,7 @@ const AlbumList = () => {
           placeholder="请输入新的相册名称"
           maxLength={20}
           autoFocus
+          style={{ borderRadius: "8px", borderColor: "#f0e6d8" }}
         />
       </Modal>
 

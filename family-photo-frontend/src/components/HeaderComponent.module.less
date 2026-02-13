@@ -1,0 +1,145 @@
+// 全局变量（延续温馨可爱风格）
+@primary-color: #d49999;    // 豆沙粉主色
+@primary-hover: #c78888;    // 主色hover
+@logout-color: #e57373;     // 退出按钮柔和红
+@logout-hover: #d36363;     // 退出hover
+@neutral-100: #fff;         // 纯白
+@neutral-200: #f9f7f3;      // 奶白
+@neutral-300: #e8d8c4;      // 浅暖棕
+@neutral-600: #5a4b38;      // 深暖棕
+@border-radius-sm: 8px;
+@border-radius-md: 16px;    // 大圆角
+@transition-base: all 0.3s ease-in-out;
+
+// 头部容器
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(90deg, #f8ece0 0%, #fff9eb 100%); // 暖调渐变背景
+  padding: 0 24px;
+  height: 70px; // 稍高更舒适
+  box-shadow: 0 2px 10px rgba(212, 153, 153, 0.15); // 柔和暖调阴影
+  border-bottom: 2px solid #ffd9d9; // 浅粉底边
+  position: sticky;
+  top: 0;
+  z-index: 999;
+
+  // 系统标题
+  .systemTitle {
+    margin: 0;
+    color: @primary-color;
+    font-family: "幼圆", "Microsoft YaHei", "Comic Sans MS", sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 1px; // 字间距更宽松
+    transition: @transition-base;
+
+    &:hover {
+      transform: scale(1.02); // 轻微放大
+      color: @primary-hover;
+    }
+  }
+
+  // 成员信息+退出按钮容器
+  .memberInfoWrapper {
+    display: flex;
+    align-items: center;
+    gap: 20px; // 更宽松的间距
+  }
+
+  // 成员信息区域
+  .memberInfo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: "幼圆", sans-serif;
+    color: @neutral-600;
+
+    .memberName {
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .memberEmail {
+      font-size: 13px;
+      color: @neutral-300;
+    }
+  }
+
+  // 退出登录按钮
+  .logoutBtn {
+    height: 40px;
+    padding: 0 20px;
+    border-radius: @border-radius-md; // 大圆角
+    background-color: @logout-color;
+    border: 2px solid @logout-color;
+    color: #fff;
+    font-family: "幼圆", sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    transition: @transition-base;
+
+    &:hover {
+      background-color: @logout-hover;
+      border-color: @logout-hover;
+      transform: scale(1.05); // 轻微放大
+      box-shadow: 0 4px 8px rgba(229, 115, 115, 0.2); // 柔和阴影
+    }
+
+    &:active {
+      transform: scale(0.98); // 轻微缩小
+    }
+  }
+
+  // 响应式适配（移动端）
+  @media (max-width: 768px) {
+    padding: 0 16px;
+    height: 60px;
+
+    .systemTitle {
+      font-size: 16px;
+    }
+
+    .memberInfoWrapper {
+      gap: 12px;
+    }
+
+    .memberInfo {
+      .memberName {
+        font-size: 13px;
+      }
+
+      .memberEmail {
+        display: none; // 移动端隐藏邮箱，节省空间
+      }
+    }
+
+    .logoutBtn {
+      height: 36px;
+      padding: 0 16px;
+      font-size: 13px;
+    }
+  }
+
+  // 超小屏适配
+  @media (max-width: 480px) {
+    .systemTitle {
+      font-size: 14px;
+      // 简化装饰，保留核心文字
+      &::after {
+        content: "";
+        margin-left: 0;
+      }
+    }
+
+    .logoutBtn {
+      padding: 0 12px;
+      // 简化按钮文字
+      &::before {
+        content: "";
+        margin-right: 0;
+      }
+    }
+  }
+}

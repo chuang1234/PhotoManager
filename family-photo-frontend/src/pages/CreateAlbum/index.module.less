@@ -1,106 +1,330 @@
+// 全局变量（可爱温馨风格适配）
+@primary-color: #d49999; // 温柔豆沙粉（主色）
+@primary-hover: #c78888; // 豆沙粉hover
+@danger-color: #e57373;  // 柔和浅红（危险色）
+@danger-hover: #d36363;  // 浅红hover
+// 暖调中性色（替代冷灰）
+@neutral-100: #f9f7f3;   // 奶白底色
+@neutral-200: #f0e6d8;   // 浅米
+@neutral-300: #e8d8c4;   // 浅暖棕
+@neutral-400: #b8a99c;   // 浅棕
+@neutral-500: #8a7d6f;   // 暖棕
+@neutral-600: #5a4b38;   // 深暖棕
+// 更大圆角（增加可爱感）
+@spacing-xs: 4px;
+@spacing-sm: 8px;
+@spacing-md: 16px;
+@spacing-lg: 24px;
+@spacing-xl: 32px;
+@border-radius-sm: 8px;   // 小圆角加大
+@border-radius-md: 16px;  // 中圆角加大
+@border-radius-lg: 24px;  // 大圆角加大
+@transition-base: all 0.3s ease-in-out; // 更柔和的过渡
+
 .createAlbumPage {
-  padding: 24px;
+  min-height: 100vh;
+  padding: @spacing-lg;
   max-width: 800px;
   margin: 0 auto;
-  font-family: "Microsoft YaHei", sans-serif;
+  // 圆润可爱字体
+  font-family: "幼圆", "Microsoft YaHei", "Comic Sans MS", sans-serif;
+  // 奶白背景+轻纹理，增加温馨感
+  background-color: @neutral-100;
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3z' fill='%23e8d8c4' fill-opacity='0.2' fill-rule='evenodd'/%3E%3C/svg%3E");
 
   // 顶部返回栏
   .header {
-    margin-bottom: 24px;
+    margin-bottom: @spacing-lg;
     .backBtn {
+      background-color: #fff;
+      border-color: @neutral-300;
+      color: @neutral-600;
+      border-radius: @border-radius-md; // 大圆角按钮
+      padding: 8px 20px;
+      transition: @transition-base;
+      border-width: 2px; // 稍粗边框更可爱
+
       &:hover {
-        background-color: #f0f7ff;
-        border-color: #1677ff;
-        color: #1677ff;
+        background-color: #f8ece0; // 浅橙hover背景
+        border-color: @primary-color;
+        color: @primary-color;
+        transform: scale(1.02); // 轻微放大
+      }
+
+      &:active {
+        background-color: #f0e0cd;
+        transform: scale(0.98); // 轻微缩小
+      }
+      // 可爱小装饰
+      &::before {
+        content: "🔙";
+        margin-right: 6px;
       }
     }
   }
 
-  // 创建卡片
+  // 创建卡片（核心容器）
   .createCard {
-    border-radius: 12px;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    padding: 32px;
+    border-radius: @border-radius-lg; // 超大圆角卡片
+    box-shadow: 0 8px 24px rgba(222, 208, 191, 0.25); // 暖色调柔和阴影
+    padding: @spacing-xl;
+    background: linear-gradient(120deg, #fff 0%, #f9f7f3 100%); // 暖调渐变背景
+    transition: @transition-base;
+    border: 2px solid #ffd9d9; // 浅粉边框更温馨
+
+    &:hover {
+      box-shadow: 0 12px 30px rgba(222, 208, 191, 0.35); // 悬浮加深暖阴影
+      transform: translateY(-4px); // 轻微上移
+    }
 
     .cardTitle {
-      margin: 0 0 24px 0;
-      color: #1f2937;
+      margin: 0 0 @spacing-lg 0;
+      color: @primary-color; // 豆沙粉标题
       font-weight: 600;
-      padding-bottom: 16px;
-      border-bottom: 1px solid #f0f0f0;
+      font-size: 22px;
+      padding-bottom: @spacing-md;
+      border-bottom: 2px solid #f0e6d8; // 暖调分割线
+      position: relative;
+      text-align: center; // 居中更温馨
+
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: -2px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 2px;
+        background-color: @primary-color;
+        border-radius: 1px;
+      }
+      // 标题可爱装饰
+      &::before {
+        content: "✨";
+        margin-right: 8px;
+      }
+      &::after {
+        content: "✨";
+        position: absolute;
+        right: calc(50% - 100px);
+        bottom: 12px;
+        font-size: 16px;
+      }
     }
   }
 
-  // 表单样式
+  // 表单整体样式
   .albumForm {
-    .nameInput {
-      border-radius: 8px;
-      border: 1px solid #e5e7eb;
-      &:focus {
-        border-color: #1677ff;
-        box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.1);
+    // 统一表单项间距
+    .formItem {
+      margin-bottom: @spacing-lg;
+
+      &:last-of-type {
+        margin-bottom: 0;
+      }
+
+      .ant-form-item-label > label {
+        color: @neutral-600; // 暖棕标签
+        font-weight: 500;
+        font-size: 15px;
+        // 标签小装饰
+        &::after {
+          content: "📝";
+          margin-left: 6px;
+          font-size: 14px;
+        }
       }
     }
 
-    // 封面上传样式
+    // 相册名称输入框
+    .nameInput {
+      border-radius: @border-radius-md; // 大圆角输入框
+      border: 2px solid @neutral-300; // 稍粗边框
+      height: 52px; // 更高输入框更可爱
+      font-size: 16px;
+      padding: 0 20px;
+      transition: @transition-base;
+      background-color: #fff;
+
+      &:focus {
+        border-color: @primary-color;
+        box-shadow: 0 0 0 4px rgba(212, 153, 153, 0.1); // 暖调外发光
+        outline: none;
+        transform: scale(1.01); // 轻微放大
+      }
+
+      &::placeholder {
+        color: @neutral-400;
+        font-style: italic; // 斜体占位符更温柔
+      }
+    }
+
+    // 封面上传区域
     .coverUploadItem {
-      margin-bottom: 16px;
       .coverUploadWrapper {
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: @spacing-md;
 
+        // 上传按钮
         .coverUploadBtn {
-          width: fit-content;
-        }
+          .ant-btn {
+            border-radius: @border-radius-md; // 大圆角上传按钮
+            border: 2px dashed @neutral-300; // 粗虚线更可爱
+            background-color: #f8ece0; // 浅橙背景
+            padding: 12px 24px;
+            color: @primary-color;
+            transition: @transition-base;
+            font-size: 15px;
 
-        .coverPreview {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          .ant-image {
-            border-radius: 4px;
-            border: 1px solid #e5e7eb;
-          }
-          .removeCoverBtn {
-            color: #ef4444;
             &:hover {
-              background-color: #fef2f2;
+              border-color: @primary-color;
+              color: @primary-hover;
+              background-color: #f0e0cd;
+              transform: scale(1.02);
+            }
+            // 上传按钮装饰
+            &::before {
+              content: "📸";
+              margin-right: 8px;
             }
           }
         }
 
+        // 封面预览
+        .coverPreview {
+          display: flex;
+          align-items: center;
+          gap: @spacing-md;
+          padding: @spacing-md;
+          background-color: #f8ece0; // 暖调预览背景
+          border-radius: @border-radius-md; // 大圆角
+          width: fit-content;
+          border: 2px solid #ffd9d9; // 浅粉边框
+
+          .previewImage {
+            border-radius: @border-radius-sm; // 大圆角预览图
+            border: 2px solid @neutral-300;
+            object-fit: cover;
+            box-shadow: 0 4px 8px rgba(222, 208, 191, 0.2);
+          }
+
+          .removeCoverBtn {
+            color: @danger-color;
+            font-size: 14px;
+            padding: @spacing-sm @spacing-md;
+            border-radius: @border-radius-sm; // 大圆角删除按钮
+            transition: @transition-base;
+            font-weight: 500;
+
+            &:hover {
+              background-color: #fef2f2; // 浅红hover背景
+              color: @danger-hover;
+              transform: scale(1.05);
+            }
+            // 删除按钮装饰
+            &::before {
+              content: "🗑️";
+              margin-right: 4px;
+            }
+          }
+        }
+
+        // 提示文字
         .coverTip {
           margin: 0;
-          font-size: 12px;
-          color: #6b7280;
-          line-height: 1.4;
+          font-size: 14px;
+          color: @neutral-500;
+          line-height: 1.8;
+          // 提示文字装饰
+          &::before {
+            content: "💡";
+            margin-right: 6px;
+          }
         }
       }
     }
 
-    .btnGroup {
-      margin-top: 16px;
-      .ant-btn {
-        height: 48px;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: 500;
-        background-color: #1677ff;
-        border-color: #1677ff;
+    // 提交按钮区域
+    .submitFormItem {
+      margin-top: @spacing-xl !important;
+
+      .submitBtn {
+        height: 56px; // 更高提交按钮
+        border-radius: @border-radius-md; // 大圆角
+        font-size: 17px;
+        font-weight: 600;
+        background-color: @primary-color;
+        border-color: @primary-color;
+        border-width: 2px;
+        transition: @transition-base;
+
         &:hover {
-          background-color: #0958d9;
-          border-color: #0958d9;
+          background-color: @primary-hover;
+          border-color: @primary-hover;
+          transform: translateY(-3px); // 明显上移更灵动
+          box-shadow: 0 8px 16px rgba(212, 153, 153, 0.3); // 暖调阴影
+        }
+
+        &:active {
+          transform: translateY(-1px);
+        }
+
+        &.ant-btn-loading {
+          background-color: @primary-color;
+          border-color: @primary-color;
+        }
+        // 提交按钮装饰
+        &::before {
+          content: "💖";
+          margin-right: 8px;
         }
       }
     }
   }
 
-  // 响应式适配
+  // 响应式适配（保留原有逻辑，调整圆角/尺寸）
   @media (max-width: 768px) {
-    padding: 16px;
+    padding: @spacing-md;
+
     .createCard {
-      padding: 20px;
+      padding: @spacing-lg;
+      border-radius: @border-radius-md;
+    }
+
+    .albumForm {
+      .nameInput {
+        height: 48px;
+        font-size: 15px;
+      }
+
+      .submitBtn {
+        height: 52px;
+        font-size: 16px;
+      }
+    }
+  }
+
+  @media (max-width: 480px) {
+    padding: @spacing-sm;
+
+    .createCard {
+      padding: @spacing-md;
+    }
+
+    .coverPreview {
+      .previewImage {
+        width: 120px;
+        height: 80px;
+      }
+    }
+    // 移动端简化装饰，保留核心风格
+    .cardTitle::before, .cardTitle::after {
+      content: "";
+    }
+    .backBtn::before, .submitBtn::before {
+      content: "";
+      margin-right: 0;
     }
   }
 }
