@@ -131,9 +131,9 @@ const AlbumList = () => {
         message.error("仅支持上传png/jpg/jpeg/gif/bmp格式的图片！");
         return false;
       }
-      const isLt2M = file.size / 1024 / 1024 < 2;
-      if (!isLt2M) {
-        message.error("封面图片大小不能超过2MB！");
+      const isLt10M = file.size / 1024 / 1024 < 10;
+      if (!isLt10M) {
+        message.error("封面图片大小不能超过10MB！");
         return false;
       }
       return true;
@@ -221,7 +221,7 @@ const AlbumList = () => {
                 <div className={styles.albumCover}>
                   <img
                     alt={album.album_name}
-                    src={`http://localhost:5000/static/${album.cover_url}?token=${localStorage.getItem("family_photo_token")}`}
+                    src={`http://localhost:5000/uploads/covers/${album.cover_url}?token=${localStorage.getItem("family_photo_token")}`}
                     className={styles.coverImg}
                   />
                   <div className={styles.coverMask}>

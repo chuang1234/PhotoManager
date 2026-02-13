@@ -8,21 +8,24 @@ import bcrypt
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'your password',
+    'password': 'Chuang@123456',
     'database': 'family_photo',
     'charset': 'utf8mb4'
 }
+parent_dir = os.path.dirname(os.path.dirname(__file__))
 
-UPLOAD_FOLDER = os.path.join(os.path.dirname(__file__), 'uploads')
+UPLOAD_PHOTO_FOLDER = os.path.join(parent_dir, 'uploads/photos')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp'}
 MAX_CONTENT_LENGTH = 16 * 1024 * 1024
 
-if not os.path.exists(UPLOAD_FOLDER):
-    os.makedirs(UPLOAD_FOLDER)
+if not os.path.exists(UPLOAD_PHOTO_FOLDER):
+    os.makedirs(UPLOAD_PHOTO_FOLDER)
 
-UPLOAD_COVER_FOLDER = os.path.join(os.path.dirname(__file__), 'static/covers')
+UPLOAD_COVER_FOLDER = os.path.join(parent_dir, 'uploads/covers')
 if not os.path.exists(UPLOAD_COVER_FOLDER):
     os.makedirs(UPLOAD_COVER_FOLDER)
+
+print(UPLOAD_COVER_FOLDER)
 
 # JWT配置（保留，调整Token载荷）
 JWT_CONFIG = {

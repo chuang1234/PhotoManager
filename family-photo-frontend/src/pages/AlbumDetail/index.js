@@ -410,7 +410,7 @@ const AlbumDetail = () => {
                         <Image
                           width="100%"
                           height="100%"
-                          src={`/uploads/${photo.file_path}?token=${localStorage.getItem("family_photo_token")}`}
+                          src={`/uploads/photos/${photo.file_path}?token=${localStorage.getItem("family_photo_token")}`}
                           className={styles.photoImg}
                           fallback="https://via.placeholder.com/200x150?text=暂无图片"
                           preview
