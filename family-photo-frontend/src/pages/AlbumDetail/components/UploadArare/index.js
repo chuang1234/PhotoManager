@@ -6,7 +6,7 @@ import moment from "moment/moment";
 
 export default function UploadArare(props) {
   const { albumId, reload, members } = props;
-  const [showUpload, setShowUpload] = useState(false);
+  const [showUpload, setShowUpload] = useState(true);
   const [selectedMember, setSelectedMember] = useState(null);
 
   // 表单状态

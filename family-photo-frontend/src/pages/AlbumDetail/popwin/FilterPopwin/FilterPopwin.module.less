@@ -1,0 +1,278 @@
+// 全局变量（统一温馨可爱风格）
+@primary-color: #d49999;    // 豆沙粉主色
+@primary-hover: #c78888;    // 主色hover
+@danger-color: #e57373;     // 柔和浅红
+@neutral-100: #fff;         // 纯白
+@neutral-200: #f9f7f3;      // 奶白
+@neutral-300: #e8d8c4;      // 浅暖棕
+@neutral-400: #b8a99c;      // 浅棕
+@neutral-600: #5a4b38;      // 深暖棕
+@border-radius-sm: 8px;
+@border-radius-md: 20px;    // 超大圆角
+@border-radius-lg: 28px;
+@transition-base: all 0.3s ease-in-out;
+
+// 搜索弹窗整体样式
+.searchModal {
+  .ant-modal-content {
+    border-radius: @border-radius-lg !important;
+    border: 2px solid #ffd9d9 !important;
+    box-shadow: 0 8px 24px rgba(212, 153, 153, 0.2);
+    background: linear-gradient(180deg, #fff 0%, #f9f7f3 100%);
+    font-family: "幼圆", "Microsoft YaHei", "Comic Sans MS", sans-serif;
+  }
+
+  .ant-modal-header {
+    background: linear-gradient(90deg, #f8ece0 0%, #fff9eb 100%);
+    border-bottom: 2px solid #ffd9d9;
+    border-radius: @border-radius-lg @border-radius-lg 0 0 !important;
+
+    .ant-modal-title {
+      color: @primary-color;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .ant-modal-close-icon {
+      color: @primary-color;
+      font-size: 18px;
+      transition: @transition-base;
+
+      &:hover {
+        color: @primary-hover;
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  // 弹窗底部按钮区域
+  .ant-modal-footer {
+    border-top: 1px solid #f0ebe4;
+    padding: 16px 24px;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+
+    .resetBtn {
+      height: 44px;
+      padding: 0 20px;
+      border-radius: @border-radius-sm;
+      border: 2px solid @neutral-300;
+      color: @neutral-600;
+      font-weight: 500;
+      transition: @transition-base;
+
+      &:hover {
+        border-color: @primary-color;
+        color: @primary-color;
+        background-color: rgba(212, 153, 153, 0.05) !important;
+      }
+    }
+
+    .cancelBtn {
+      height: 44px;
+      padding: 0 20px;
+      border-radius: @border-radius-sm;
+      border: 2px solid @neutral-300;
+      color: @neutral-600;
+      font-weight: 500;
+      transition: @transition-base;
+
+      &:hover {
+        border-color: @danger-color;
+        color: @danger-color;
+        background-color: rgba(229, 115, 115, 0.05) !important;
+      }
+    }
+
+    .searchBtn {
+      height: 44px;
+      padding: 0 24px;
+      border-radius: @border-radius-sm;
+      background-color: @primary-color !important;
+      border-color: @primary-color !important;
+      color: #fff !important;
+      font-weight: 600;
+      transition: @transition-base;
+
+      &:hover {
+        background-color: @primary-hover !important;
+        border-color: @primary-hover !important;
+        transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(212, 153, 153, 0.2);
+      }
+    }
+  }
+}
+
+// 搜索表单样式
+.searchForm {
+  padding: 8px 0;
+
+  .formItem {
+    margin-bottom: 20px;
+
+    .ant-form-item-label > label {
+      font-weight: 600;
+      color: @neutral-600;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+  }
+
+  // 输入框样式
+  .formInput {
+    border-radius: @border-radius-sm;
+    border: 2px solid @neutral-300;
+    height: 48px;
+    font-size: 15px;
+    padding: 0 16px;
+    transition: @transition-base;
+    background-color: #fff;
+
+    &:focus, &:hover {
+      border-color: @primary-color;
+      box-shadow: 0 0 0 4px rgba(212, 153, 153, 0.1);
+      outline: none;
+    }
+
+    &::placeholder {
+      color: @neutral-400;
+      font-style: italic;
+    }
+  }
+
+  // 下拉选择器样式
+  .formSelect {
+    .ant-select-selector {
+      border-radius: @border-radius-sm !important;
+      border: 2px solid @neutral-300 !important;
+      height: 48px !important;
+      font-size: 15px;
+      transition: @transition-base;
+
+      &:focus, &:hover {
+        border-color: @primary-color !important;
+        box-shadow: 0 0 0 4px rgba(212, 153, 153, 0.1) !important;
+      }
+    }
+
+    .ant-select-selection-placeholder {
+      color: @neutral-400;
+      font-style: italic;
+    }
+
+    .ant-select-dropdown {
+      border-radius: @border-radius-sm;
+      border: 2px solid @neutral-300;
+      box-shadow: 0 4px 12px rgba(212, 153, 153, 0.15);
+
+      .ant-select-item {
+        padding: 10px 16px;
+        font-size: 14px;
+        transition: @transition-base;
+
+        &:hover {
+          background-color: #f8ece0;
+          color: @primary-color;
+        }
+
+        &.ant-select-item-selected {
+          background-color: #f8ece0;
+          color: @primary-color;
+          font-weight: 600;
+        }
+      }
+    }
+  }
+
+  // 日期选择器样式
+  .formPicker {
+    .ant-picker {
+      border-radius: @border-radius-sm;
+      border: 2px solid @neutral-300;
+      height: 48px;
+      font-size: 15px;
+      transition: @transition-base;
+
+      &:focus, &:hover {
+        border-color: @primary-color;
+        box-shadow: 0 0 0 4px rgba(212, 153, 153, 0.1);
+      }
+    }
+
+    .ant-picker-input input::placeholder {
+      color: @neutral-400;
+      font-style: italic;
+    }
+
+    .ant-picker-range {
+      .ant-picker-separator {
+        color: @primary-color;
+        font-weight: 600;
+      }
+    }
+
+    .ant-picker-dropdown {
+      border-radius: @border-radius-sm;
+      border: 2px solid @neutral-300;
+      box-shadow: 0 4px 12px rgba(212, 153, 153, 0.15);
+
+      .ant-picker-cell-selected {
+        background-color: #f8ece0 !important;
+        color: @primary-color !important;
+
+        &::before {
+          background-color: @primary-color !important;
+        }
+      }
+    }
+  }
+}
+
+// 响应式适配
+@media (max-width: 768px) {
+  .searchModal {
+    .ant-modal {
+      width: 95% !important;
+      margin: 0 auto;
+    }
+
+    .ant-modal-footer {
+      flex-wrap: wrap;
+
+      .resetBtn, .cancelBtn, .searchBtn {
+        flex: 1;
+        width: 100%;
+      }
+    }
+  }
+
+  .formInput, .formSelect .ant-select-selector, .formPicker .ant-picker {
+    height: 44px !important;
+    font-size: 14px !important;
+  }
+
+  .formItem {
+    margin-bottom: 16px !important;
+
+    .ant-form-item-label > label {
+      font-size: 14px !important;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .ant-modal-header {
+    padding: 12px 16px !important;
+
+    .ant-modal-title {
+      font-size: 16px !important;
+    }
+  }
+
+  .ant-modal-footer {
+    padding: 12px 16px !important;
+  }
+}

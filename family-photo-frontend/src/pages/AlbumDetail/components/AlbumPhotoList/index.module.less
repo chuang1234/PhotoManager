@@ -14,7 +14,7 @@
 @transition-base: all 0.3s ease-in-out;
 
 .albumDetail {
-  padding: 24px;
+  //padding: 24px;
   max-width: 1920px;
   margin: 0 auto;
   // 圆润可爱字体
@@ -78,51 +78,6 @@
         border-color: @primary-hover;
         transform: scale(1.02);
         box-shadow: 0 4px 8px rgba(212, 153, 153, 0.3);
-      }
-    }
-
-    .photoListBtn, .carouselBtn {
-      height: 44px;
-      padding: 0 24px;
-      border-radius: @border-radius-md; // 超大圆角，更软糯
-      font-family: "幼圆", "Microsoft YaHei", "Comic Sans MS", sans-serif;
-      font-weight: 600;
-      font-size: 15px;
-      transition: @transition-base;
-      position: relative;
-      overflow: hidden;
-
-      // 默认态（未激活）
-      &[type="default"] {
-        background: linear-gradient(120deg, #f8ece0 0%, #fff9eb 100%);
-        border: 2px solid #ffd9d9;
-        color: @primary-color;
-
-        &:hover {
-          background: rgba(212, 153, 153, 0.1);
-          transform: translateY(-2px);
-          box-shadow: 0 4px 12px rgba(212, 153, 153, 0.15);
-        }
-      }
-
-      // 激活态（选中）
-      &[type="primary"] {
-        background: linear-gradient(120deg, @primary-color 0%, @primary-hover 100%);
-        border: 2px solid @primary-color;
-        color: #fff;
-        box-shadow: 0 4px 12px rgba(212, 153, 153, 0.2);
-
-        // 激活态装饰（小爱心/星星，增加可爱感）
-        &::after {
-          content: "✨";
-          margin-left: 8px;
-          animation: twinkle 1.5s infinite alternate;
-        }
-
-        &:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 16px rgba(212, 153, 153, 0.25);
-        }
       }
     }
   }
@@ -410,17 +365,6 @@
     }
   }
 
-  @keyframes twinkle {
-    0% {
-      opacity: 0.6;
-      transform: scale(0.9);
-    }
-    100% {
-      opacity: 1;
-      transform: scale(1.1);
-    }
-  }
-
   @media (max-width: 768px) {
     padding: 16px;
 
@@ -431,14 +375,6 @@
       .backBtn, .searchBtn, .favoriteBtn {
         flex: 1;
         width: 100%;
-      }
-
-      .photoListBtn, .carouselBtn {
-        height: 40px;
-        padding: 0 16px;
-        font-size: 14px;
-        flex: 1; // 移动端平分宽度
-        min-width: 120px;
       }
     }
 
@@ -473,18 +409,6 @@
     .emptyTip {
       padding: 40px 0;
       font-size: 14px;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .topBar {
-      padding: 12px 0;
-
-      .photoListBtn, .carouselBtn {
-        height: 38px;
-        padding: 0 12px;
-        font-size: 13px;
-      }
     }
   }
 }

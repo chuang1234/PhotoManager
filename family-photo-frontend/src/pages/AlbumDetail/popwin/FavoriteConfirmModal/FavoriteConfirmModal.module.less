@@ -1,0 +1,245 @@
+// 全局变量（统一温馨可爱风格）
+@primary-color: #d49999;    // 豆沙粉主色
+@primary-hover: #c78888;    // 主色hover
+@danger-color: #e57373;     // 柔和浅红
+@neutral-100: #fff;         // 纯白
+@neutral-200: #f9f7f3;      // 奶白
+@neutral-300: #e8d8c4;      // 浅暖棕
+@neutral-400: #b8a99c;      // 浅棕
+@neutral-600: #5a4b38;      // 深暖棕
+@border-radius-sm: 8px;
+@border-radius-md: 20px;    // 超大圆角
+@border-radius-lg: 28px;
+@transition-base: all 0.3s ease-in-out;
+
+// 收藏弹窗整体样式
+.favoriteModal {
+  .ant-modal-content {
+    border-radius: @border-radius-lg !important;
+    border: 2px solid #ffd9d9 !important;
+    box-shadow: 0 8px 24px rgba(212, 153, 153, 0.2);
+    background: linear-gradient(180deg, #fff 0%, #f9f7f3 100%);
+    font-family: "幼圆", "Microsoft YaHei", "Comic Sans MS", sans-serif;
+  }
+
+  .ant-modal-header {
+    background: linear-gradient(90deg, #f8ece0 0%, #fff9eb 100%);
+    border-bottom: 2px solid #ffd9d9;
+    border-radius: @border-radius-lg @border-radius-lg 0 0 !important;
+    padding: 16px 24px;
+
+    .ant-modal-title {
+      color: @primary-color;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+
+    .ant-modal-close-icon {
+      color: @primary-color;
+      font-size: 18px;
+      transition: @transition-base;
+
+      &:hover {
+        color: @primary-hover;
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  // 弹窗底部按钮区域
+  .ant-modal-footer {
+    border-top: 1px solid #f0ebe4;
+    padding: 16px 24px;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+
+    .cancelBtn {
+      height: 44px;
+      padding: 0 20px;
+      border-radius: @border-radius-sm;
+      border: 2px solid @neutral-300;
+      color: @neutral-600;
+      font-weight: 500;
+      transition: @transition-base;
+
+      &:hover {
+        border-color: @neutral-400;
+        color: @neutral-600;
+        background-color: rgba(232, 216, 196, 0.05) !important;
+      }
+    }
+
+    .confirmBtn {
+      height: 44px;
+      padding: 0 24px;
+      border-radius: @border-radius-sm;
+      background-color: @primary-color !important;
+      border-color: @primary-color !important;
+      color: #fff !important;
+      font-weight: 600;
+      transition: @transition-base;
+
+      &:not(:disabled):hover {
+        background-color: @primary-hover !important;
+        border-color: @primary-hover !important;
+        transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(212, 153, 153, 0.2);
+      }
+
+      &:disabled {
+        background-color: @neutral-300 !important;
+        border-color: @neutral-300 !important;
+        color: #fff !important;
+        cursor: not-allowed;
+      }
+    }
+  }
+}
+
+// 选择器容器样式
+.selectWrapper {
+  padding: 8px 0;
+
+  .selectTip {
+    color: @neutral-400;
+    font-size: 14px;
+    margin-bottom: 12px;
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  // 收藏夹选择器样式
+  .folderSelect {
+    width: 100%;
+
+    .ant-select-selector {
+      border-radius: @border-radius-sm !important;
+      border: 2px solid @neutral-300 !important;
+      height: 52px !important;
+      font-size: 15px;
+      padding: 0 16px !important;
+      transition: @transition-base;
+      background-color: #fff;
+
+      &:focus, &:hover {
+        border-color: @primary-color !important;
+        box-shadow: 0 0 0 4px rgba(212, 153, 153, 0.1) !important;
+      }
+    }
+
+    .ant-select-selection-placeholder {
+      color: @neutral-400;
+      font-style: italic;
+    }
+
+    .ant-select-arrow {
+      color: @primary-color;
+      transition: @transition-base;
+
+      &:hover {
+        color: @primary-hover;
+        transform: translateY(2px);
+      }
+    }
+
+    // 下拉选项样式
+    .ant-select-dropdown {
+      border-radius: @border-radius-sm;
+      border: 2px solid @neutral-300;
+      box-shadow: 0 4px 12px rgba(212, 153, 153, 0.15);
+      background-color: #fff;
+
+      .ant-select-item {
+        padding: 12px 16px;
+        font-size: 15px;
+        transition: @transition-base;
+
+        &:hover {
+          background-color: #f8ece0;
+          color: @primary-color;
+        }
+
+        &.ant-select-item-selected {
+          background-color: #f8ece0;
+          color: @primary-color;
+          font-weight: 600;
+        }
+
+        // 默认收藏夹选项高亮
+        &.defaultOption {
+          background-color: rgba(212, 153, 153, 0.05);
+          border-left: 4px solid @primary-color;
+
+          &:hover {
+            background-color: #f8ece0;
+          }
+        }
+      }
+    }
+
+    // 清空按钮样式
+    .ant-select-clear-icon {
+      color: @neutral-400;
+      transition: @transition-base;
+
+      &:hover {
+        color: @danger-color;
+      }
+    }
+  }
+
+  // 默认收藏夹标签
+  .defaultTag {
+    font-size: 12px;
+    color: #fff;
+    background-color: @primary-color;
+    border-radius: 4px;
+    padding: 2px 6px;
+    margin-left: 8px;
+    font-weight: 600;
+  }
+}
+
+// 响应式适配
+@media (max-width: 768px) {
+  .favoriteModal {
+    .ant-modal {
+      width: 95% !important;
+      margin: 0 auto;
+    }
+
+    .ant-modal-footer {
+      flex-wrap: wrap;
+
+      .cancelBtn, .confirmBtn {
+        flex: 1;
+        width: 100%;
+      }
+    }
+  }
+
+  .folderSelect .ant-select-selector {
+    height: 48px !important;
+    font-size: 14px !important;
+  }
+
+  .selectTip {
+    font-size: 13px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .ant-modal-header {
+    padding: 12px 16px !important;
+
+    .ant-modal-title {
+      font-size: 16px !important;
+    }
+  }
+
+  .ant-modal-footer {
+    padding: 12px 16px !important;
+  }
+}
