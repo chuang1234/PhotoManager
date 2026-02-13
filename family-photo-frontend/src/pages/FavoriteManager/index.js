@@ -332,7 +332,7 @@ const FavoriteManager = () => {
                           <Image
                             width="100%"
                             height="150px"
-                            src={`/uploads/${photo.file_path}?token=${localStorage.getItem("family_photo_token")}`}
+                            src={`/uploads/photos/${photo.file_path}?token=${localStorage.getItem("family_photo_token")}`}
                             fallback="https://via.placeholder.com/200x150?text=暂无图片"
                             preview
                             className={styles.photoImg}
