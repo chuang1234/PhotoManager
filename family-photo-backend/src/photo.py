@@ -1,5 +1,5 @@
 import os
-from flask import Blueprint, request, jsonify, send_from_directory, g
+from flask import Blueprint, request, jsonify, g
 import pymysql
 from datetime import datetime
 from werkzeug.utils import secure_filename

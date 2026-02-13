@@ -28,6 +28,7 @@ import { formatTime } from "../../utils/dateUtil";
 import { useMember } from "../../contexts/MemberContext";
 import FavoriteConfirmModal from "./popwin/FavoriteConfirmModal";
 import UploadArare from "./components/UploadArare";
+import PhotoCapture from "./components/PhotoCapture";
 
 const AlbumDetail = () => {
   const { albumId } = useParams();
@@ -428,6 +429,14 @@ const AlbumDetail = () => {
             }}
             albumId={albumId}
             members={members}
+          />
+          <PhotoCapture
+            albumId={albumId}
+            members={members}
+            reload={() => {
+              setCurrentPage(1);
+              fetchPhotos(isSearch, searchParams);
+            }}
           />
         </div>
       </div>
