@@ -3,6 +3,7 @@ import jwt
 import hashlib
 from datetime import datetime, timedelta
 import bcrypt
+import logging
 
 # 原有数据库/文件配置不变...
 DB_CONFIG = {
@@ -25,7 +26,7 @@ UPLOAD_COVER_FOLDER = os.path.join(parent_dir, 'uploads/covers')
 if not os.path.exists(UPLOAD_COVER_FOLDER):
     os.makedirs(UPLOAD_COVER_FOLDER)
 
-print(UPLOAD_COVER_FOLDER)
+logger = logging.getLogger('photo_manager')
 
 # JWT配置（保留，调整Token载荷）
 JWT_CONFIG = {
@@ -33,46 +34,42 @@ JWT_CONFIG = {
     'expire_hours': 24
 }
 
-def encrypt_password(password: str) -> str:
+def encrypt_password(plain_password: str) -> str:
     """
-    安全的密码加密（使用bcrypt，自动生成随机盐值）
-    :param password: 原始密码
-    :return: 带盐值的哈希字符串（可直接存入数据库）
-    """
-    # 1. 处理密码长度：bcrypt最大支持72字节，超出部分截断（或先做一次SHA256）
-    if len(password.encode('utf-8')) > 72:
-        # 先通过SHA256压缩到32字节，再加密（避免截断导致密码失效）
-        password = hashlib.sha256(password.encode('utf-8')).hexdigest()
-
-    # 2. 生成随机盐值（cost=12 是生产环境推荐值，值越大加密越慢，越安全）
-    salt = bcrypt.gensalt(rounds=12)
-
-    # 3. 加密密码（自动将盐值融入哈希结果）
-    password_hash = bcrypt.hashpw(password.encode('utf-8'), salt)
-
-    # 4. 转换为字符串返回（方便存入数据库）
-    return password_hash.decode('utf-8')
-
-def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """
-    验证密码是否匹配
-    :param plain_password: 用户输入的原始密码
-    :param hashed_password: 数据库中存储的加密哈希
-    :return: 匹配返回True，否则False
+    密码加密（注册/修改密码时调用）
+    逻辑：原始密码 → SHA256 → bcrypt哈希（和登录验证逻辑对齐）
     """
     try:
-        # 1. 处理密码长度（和加密逻辑一致）
-        if len(plain_password.encode('utf-8')) > 72:
-            plain_password = hashlib.sha256(plain_password.encode('utf-8')).hexdigest()
+        # 1. 先做SHA256哈希（和前端一致）
+        sha256_hash = hashlib.sha256(plain_password.encode('utf-8')).hexdigest()
 
-        # 2. 验证密码（bcrypt会自动从哈希中提取盐值进行比对）
+        # 2. bcrypt加密（处理长度限制 + 加盐）
+        if len(sha256_hash.encode('utf-8')) > 72:
+            sha256_hash = hashlib.sha256(sha256_hash.encode('utf-8')).hexdigest()
+
+        salt = bcrypt.gensalt(12)  # 加盐，强度12（生产环境推荐10-14）
+        bcrypt_hash = bcrypt.hashpw(sha256_hash.encode('utf-8'), salt)
+
+        return bcrypt_hash.decode('utf-8')
+    except Exception as e:
+        logger.error(f"密码加密失败：{str(e)}")
+        raise e  # 抛异常，避免存储错误的哈希
+
+def verify_password(frontend_sha256: str, db_bcrypt_hash: str) -> bool:
+    """
+    登录验证：前端传的SHA256串 → 验证数据库的bcrypt哈希
+    :param frontend_sha256: 前端SHA256后的密码串（比如123456→e10adc3949ba59abbe56e057f20f883e）
+    :param db_bcrypt_hash: 数据库存储的bcrypt哈希（encrypt_password生成的）
+    :return: 验证通过返回True，否则False
+    """
+    try:
+        # bcrypt.checkpw会自动从db_bcrypt_hash中提取盐值，无需手动处理
         return bcrypt.checkpw(
-            plain_password.encode('utf-8'),
-            hashed_password.encode('utf-8')
+            frontend_sha256.encode('utf-8'),  # 前端传的SHA256串
+            db_bcrypt_hash.encode('utf-8')    # 数据库的bcrypt哈希
         )
     except Exception as e:
-        # 哈希格式错误/其他异常时，返回验证失败
-        print(f"密码验证失败：{str(e)}")
+        logger.error(f"密码验证失败：{str(e)}")
         return False
 
 # 生成JWT Token（携带member_id等信息）

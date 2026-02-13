@@ -1,10 +1,13 @@
 from flask import Blueprint, request, jsonify, send_from_directory, g
 import pymysql
+import logging
 
 auth_bp = Blueprint('auth', __name__)
 
 from config.config import (verify_token, verify_password, generate_token)
 from .utils import get_db_connection
+
+logger = logging.getLogger('photo_manager')
 
 def login_required(f):
     def wrapper(*args, **kwargs):
@@ -32,6 +35,8 @@ def login():
     data = request.json
     username = data.get('username')
     password = data.get('password')
+
+    logger.info(f'登录请求：{data}');
 
     if not username or not password:
         return jsonify({'code': 400, 'msg': '用户名和密码不能为空'}), 400
