@@ -120,7 +120,118 @@ PhotoManager/
 
 ---
 
-## 🚀 快速开始
+## 🐳 Docker 一键部署（推荐）
+
+> 无需手动安装 Python、Node.js、MySQL，一条命令搞定全部部署。
+
+### 前置要求
+
+- [Docker Desktop](https://www.docker.com/products/docker-desktop)（Windows/Mac）或 Docker Engine（Linux）
+
+### 一键部署
+
+**Windows：**
+```bash
+# 双击运行 deploy.bat，或在命令行执行：
+deploy.bat
+```
+
+**Linux / macOS：**
+```bash
+chmod +x deploy.sh
+./deploy.sh
+```
+
+**手动执行（等效于脚本）：**
+```bash
+# 1. 复制环境配置
+cp .env.docker .env
+#   → 编辑 .env 修改数据库密码、JWT密钥等（可选）
+
+# 2. 构建并启动
+docker compose up -d --build
+
+# 3. 查看状态
+docker compose ps
+```
+
+### 访问地址
+
+| 服务 | 地址 |
+|------|------|
+| 🌐 前端 | http://localhost |
+| 🔧 后端 API | http://localhost:5000 |
+| 🗄️ MySQL | localhost:3306 |
+
+### Docker 架构
+
+```
+┌──────────────────────────────────────────────────────────┐
+│                    Docker Compose                        │
+│                                                          │
+│  ┌─────────────┐   ┌──────────────┐   ┌──────────────┐ │
+│  │  Frontend   │   │   Backend    │   │    MySQL     │ │
+│  │  (Nginx)    │──▶│  (Gunicorn)  │──▶│   (5.7)      │ │
+│  │  :80        │   │  :5000       │   │  :3306       │ │
+│  │  React 静态  │   │  Flask API   │   │  family_photo│ │
+│  └─────────────┘   └──────┬───────┘   └──────────────┘ │
+│                           │                             │
+│                    ┌──────▼───────┐                     │
+│                    │   Volumes    │                     │
+│                    │ uploads_data │                     │
+│                    │ mysql_data   │                     │
+│                    └──────────────┘                     │
+└──────────────────────────────────────────────────────────┘
+```
+
+### 配置说明
+
+环境配置文件 `.env`（从 `.env.docker` 复制）支持以下变量：
+
+| 变量 | 说明 | 默认值 |
+|------|------|--------|
+| `DB_PASSWORD` | MySQL root 密码 | Chuang@123456 |
+| `JWT_SECRET` | JWT 签名密钥 | 内置默认值（建议修改） |
+| `AI_PROVIDER` | AI 服务提供商 | ollama |
+| `AI_MODEL` | AI 模型名称 | qwen2.5:14b |
+| `FRONTEND_PORT` | 前端端口 | 80 |
+| `BACKEND_PORT` | 后端端口 | 5000 |
+| `MYSQL_PORT` | MySQL 端口 | 3306 |
+
+### 常用命令
+
+```bash
+docker compose ps          # 查看容器状态
+docker compose logs -f     # 实时查看日志
+docker compose down        # 停止所有服务
+docker compose up -d --build  # 重新构建并启动
+docker compose down -v     # 停止并删除数据卷（⚠️ 清空数据）
+```
+
+### Docker 部署文件说明
+
+```
+PhotoManager/
+├── docker-compose.yml              # 编排文件（MySQL + 后端 + 前端）
+├── .env.docker                     # 环境配置模板
+├── deploy.bat                      # Windows 一键部署脚本
+├── deploy.sh                       # Linux/Mac 一键部署脚本
+├── docker/
+│   └── mysql/
+│       └── init.sql                # MySQL 自动初始化脚本
+├── family-photo-backend/
+│   ├── Dockerfile                  # 后端镜像构建
+│   ├── .dockerignore
+│   └── docker-entrypoint.sh        # 启动脚本（等待MySQL + Gunicorn）
+└── family-photo-frontend/
+    ├── Dockerfile                  # 前端镜像构建（多阶段：Node构建 + Nginx部署）
+    ├── .dockerignore
+    └── nginx.conf                  # Nginx 配置（SPA路由 + API代理）
+```
+
+---
+
+## 🚀 手动部署（快速开始）
 
 ### 环境要求
 

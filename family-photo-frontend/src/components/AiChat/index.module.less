@@ -1,0 +1,402 @@
+.chatWrapper {
+  // 悬浮容器，固定在页面右下角，不影响其他布局
+  position: fixed;
+  z-index: 10000;
+  // 位置由 JS 动态设置（left/top）
+  user-select: none;
+}
+
+// ─── 悬浮按钮（收起状态）────────────────────────────
+.chatBubble {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #d49999 0%, #e8b4b8 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow:
+    0 4px 16px rgba(212, 153, 153, 0.5),
+    0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  animation: bubbleFloat 3s ease-in-out infinite;
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow:
+      0 6px 20px rgba(212, 153, 153, 0.6),
+      0 3px 6px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  .bubbleIcon {
+    font-size: 26px;
+    color: #fff;
+    line-height: 1;
+    // 禁用文字图标的默认选中行为
+    pointer-events: none;
+  }
+}
+
+// 气泡轻微浮动动画（吸引注意力）
+@keyframes bubbleFloat {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+
+// ─── 对话框主体────────────────────────────────────
+.chatBox {
+  width: 380px;
+  height: 540px;
+  max-height: 80vh;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow:
+    0 12px 40px rgba(0, 0, 0, 0.15),
+    0 2px 8px rgba(212, 153, 153, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  // 打开动画
+  animation: chatBoxOpen 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes chatBoxOpen {
+  from {
+    opacity: 0;
+    transform: scale(0.8) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+// ─── 对话框头部（可拖拽区域）────────────────────
+.chatHeader {
+  background: linear-gradient(135deg, #d49999 0%, #e8b4b8 100%);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: move;   // 提示可拖拽
+  flex-shrink: 0;
+
+  // 头部内容区
+  .headerInfo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .headerAvatar {
+    font-size: 22px;
+    line-height: 1;
+  }
+
+  .headerTitle {
+    font-family: "幼圆", "Microsoft YaHei", sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    margin: 0;
+    letter-spacing: 0.5px;
+  }
+
+  .headerSubtitle {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.75);
+    margin-top: 1px;
+  }
+
+  // 最小化按钮
+  .minimizeBtn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+    flex-shrink: 0;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.35);
+    }
+  }
+}
+
+// ─── 消息列表区────────────────────────────────────
+.chatMessages {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px;
+  background: linear-gradient(180deg, #fff9f5 0%, #ffffff 100%);
+
+  // 自定义滚动条（保持温馨风格）
+  &::-webkit-scrollbar {
+    width: 5px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #e8d8c4;
+    border-radius: 3px;
+    &:hover {
+      background: #d49999;
+    }
+  }
+}
+
+// 空状态提示
+.emptyHint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #c7a8a8;
+  font-size: 13px;
+  text-align: center;
+  line-height: 1.6;
+
+  .emptyIcon {
+    font-size: 40px;
+    margin-bottom: 10px;
+    opacity: 0.7;
+  }
+}
+
+// ─── 消息气泡通用样式──────────────────────────────
+.messageRow {
+  display: flex;
+  margin-bottom: 14px;
+  align-items: flex-start;
+
+  // 用户消息（靠右）
+  &.userMessage {
+    flex-direction: row-reverse;
+  }
+
+  // AI 消息（靠左）
+  &.aiMessage {
+    flex-direction: row;
+  }
+}
+
+// 头像
+.msgAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+  margin: 0 8px;
+}
+
+.userAvatar {
+  background: linear-gradient(135deg, #c78888 0%, #d49999 100%);
+  color: #fff;
+}
+
+.aiAvatar {
+  background: linear-gradient(135deg, #f8ece0 0%, #ffd9d9 100%);
+  color: #d49999;
+}
+
+// 气泡
+.msgBubble {
+  max-width: 230px;
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  word-break: break-word;
+  white-space: pre-wrap;        // 保留换行和空格
+  position: relative;
+}
+
+.userBubble {
+  background: linear-gradient(135deg, #d49999 0%, #c78888 100%);
+  color: #fff;
+  border-top-right-radius: 4px; // 用户气泡右上方角
+}
+
+.aiBubble {
+  background: #fff5f0;
+  color: #5a4b38;
+  border: 1px solid #ffe4d9;
+  border-top-left-radius: 4px;  // AI 气泡左上方角
+}
+
+// 消息时间戳
+.msgTime {
+  font-size: 10.5px;
+  color: #c7a8a8;
+  margin-top: 4px;
+  padding: 0 4px;
+}
+
+.userTime {
+  text-align: right;
+}
+
+.aiTime {
+  text-align: left;
+}
+
+// ─── 加载中状态（AI 正在思考）────────────────────
+.loadingRow {
+  display: flex;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.loadingBubble {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 16px;
+  background: #fff5f0;
+  border: 1px solid #ffe4d9;
+  border-radius: 16px;
+  border-top-left-radius: 4px;
+}
+
+.loadingDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #d49999;
+  animation: loadingBounce 1.2s infinite ease-in-out;
+
+  &:nth-child(2) { animation-delay: 0.15s; }
+  &:nth-child(3) { animation-delay: 0.30s; }
+}
+
+@keyframes loadingBounce {
+  0%, 60%, 100% { transform: scale(0.7); opacity: 0.4; }
+  30%           { transform: scale(1.0); opacity: 1.0; }
+}
+
+// ─── 输入区────────────────────────────────────────
+.chatInput {
+  padding: 12px 14px;
+  border-top: 1px solid #fff0e8;
+  background: #fff;
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+
+  .inputWrapper {
+    flex: 1;
+    position: relative;
+  }
+
+  // 文本输入框
+  .chatTextarea {
+    width: 100%;
+    min-height: 60px;
+    max-height: 100px;
+    padding: 8px 12px;
+    border: 1.5px solid #f0d8cc;
+    border-radius: 19px;
+    background: #fffaf7;
+    font-size: 13.5px;
+    font-family: "Microsoft YaHei", sans-serif;
+    color: #5a4b38;
+    resize: none;
+    outline: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
+    line-height: 1.4;
+
+    &::placeholder {
+      color: #c7a8a8;
+    }
+
+    &:focus {
+      border-color: #d49999;
+      background: #fff;
+      box-shadow: 0 0 0 2px rgba(212, 153, 153, 0.15);
+    }
+  }
+
+  // 发送按钮
+  .sendBtn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: none;
+    background: linear-gradient(135deg, #d49999 0%, #c78888 100%);
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
+
+    &:hover:not(:disabled) {
+      transform: scale(1.08);
+      box-shadow: 0 3px 10px rgba(212, 153, 153, 0.45);
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.92);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+// ─── 对话框底部提示──────────────────────────────
+.chatFooter {
+  text-align: center;
+  padding: 0 14px 8px;
+  font-size: 10.5px;
+  color: #d4b8b8;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+// ─── 响应式适配（手机屏幕）────────────────────────
+@media (max-width: 480px) {
+  .chatBox {
+    width: calc(100vw - 24px);
+    height: calc(100vh - 120px);
+    max-height: calc(100vh - 120px);
+    border-radius: 16px;
+  }
+
+  .chatBubble {
+    width: 48px;
+    height: 48px;
+
+    .bubbleIcon {
+      font-size: 22px;
+    }
+  }
+
+  .msgBubble {
+    max-width: 180px;
+  }
+}
