@@ -15,14 +15,14 @@ const HeaderComponent = () => {
   const handleLogout = async () => {
     try {
       await request.post("/api/logout");
-      localStorage.removeItem("family_photo_token");
-      localStorage.removeItem("family_photo_member");
-      localStorage.removeItem("family_member_id");
-      message.success("退出成功啦～👋"); // 温馨提示
-      navigate("/login");
     } catch (err) {
-      message.error("退出失败啦，再试试～"); // 温馨提示
+      // 后端异常也要继续清除本地状态，避免 Cookie 残留
     }
+    localStorage.removeItem("family_photo_token");
+    localStorage.removeItem("family_photo_member");
+    localStorage.removeItem("family_member_id");
+    message.success("退出成功啦～👋");
+    navigate("/login");
   };
 
   return (

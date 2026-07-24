@@ -4,13 +4,17 @@ import hashlib
 from datetime import datetime, timedelta
 import bcrypt
 import logging
+from dotenv import load_dotenv
 
-# 原有数据库/文件配置不变...
+# 确保 .env 文件被加载（兼容直接运行 config.py 的场景）
+load_dotenv()
+
+# ── 数据库配置（敏感信息从环境变量读取）──────────────────
 DB_CONFIG = {
-    'host': 'localhost',
-    'user': 'root',
-    'password': 'Chuang@123456',
-    'database': 'family_photo',
+    'host': os.environ.get('DB_HOST', 'localhost'),
+    'user': os.environ.get('DB_USER', 'root'),
+    'password': os.environ.get('DB_PASSWORD', ''),
+    'database': os.environ.get('DB_NAME', 'family_photo'),
     'charset': 'utf8mb4'
 }
 parent_dir = os.path.dirname(os.path.dirname(__file__))
@@ -28,11 +32,17 @@ if not os.path.exists(UPLOAD_COVER_FOLDER):
 
 logger = logging.getLogger('photo_manager')
 
-# JWT配置（保留，调整Token载荷）
+# JWT配置（敏感信息从环境变量读取）
 JWT_CONFIG = {
-    'secret': 'your_family_secret_key',  # 自定义随机字符串
-    'expire_hours': 24
+    'secret': os.environ.get('JWT_SECRET', ''),
+    'expire_hours': int(os.environ.get('JWT_EXPIRE_HOURS', '24'))
 }
+
+# 启动时校验：敏感配置不能为空
+if not DB_CONFIG['password']:
+    raise RuntimeError('❌ 环境变量 DB_PASSWORD 未配置，请在 .env 文件中设置数据库密码')
+if not JWT_CONFIG['secret']:
+    raise RuntimeError('❌ 环境变量 JWT_SECRET 未配置，请在 .env 文件中设置 JWT 密钥')
 
 def encrypt_password(plain_password: str) -> str:
     """

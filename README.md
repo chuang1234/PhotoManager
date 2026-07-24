@@ -174,12 +174,12 @@ source venv/bin/activate
 # 安装依赖
 pip install -r requirements.txt
 
-# 配置环境变量
+# 配置环境变量（必须！）
 cp .env.example .env
-# 编辑 .env 填入数据库密码和 AI 配置
-
-# 修改 config/config.py 中的数据库连接信息
-# DB_CONFIG = { 'host': 'localhost', 'user': 'root', 'password': '你的密码', ... }
+# 编辑 .env，填入以下必要配置：
+#   DB_PASSWORD  — 数据库密码
+#   JWT_SECRET   — JWT 密钥（用 python -c "import secrets; print(secrets.token_hex(32))" 生成）
+#   AI_API_KEY   — AI 服务密钥（可选）
 
 # 启动服务
 python -m src.main
@@ -204,9 +204,20 @@ npm start
 
 ## ⚙️ 环境变量配置
 
-在 `family-photo-backend/.env` 中配置：
+在 `family-photo-backend/.env` 中配置（参考 `.env.example`）：
 
 ```bash
+# ── 数据库配置（必填！）─────────────────────
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=你的数据库密码
+DB_NAME=family_photo
+
+# ── JWT 密钥（必填！）──────────────────────
+# 生成方式：python -c "import secrets; print(secrets.token_hex(32))"
+JWT_SECRET=你的JWT密钥
+JWT_EXPIRE_HOURS=24
+
 # ── AI 服务配置 ──────────────────────────────
 # 提供商：openai（默认）| ollama（本地部署，无需 API Key）
 AI_PROVIDER=openai
@@ -227,6 +238,11 @@ AI_TIMEOUT=60
 # ── Flask 环境 ───────────────────────────────
 FLASK_ENV=dev
 ```
+
+> ⚠️ **安全提示：**  
+> - `DB_PASSWORD` 和 `JWT_SECRET` 为必填项，未配置时服务启动会报错  
+> - `.env` 文件已在 `.gitignore` 中，不会被提交到代码仓库  
+> - 生产环境请务必使用强随机字符串作为 `JWT_SECRET`
 
 ---
 
@@ -435,9 +451,6 @@ POST /api/login  { password: sha256_hash }
 ## 📋 待办事项
 
 - [ ] 实现 Token 黑名单机制，使 Logout 真正生效
-- [ ] 添加相册/照片的访问权限控制（按成员隔离）
-- [ ] 将数据库密码和 JWT 密钥迁移到环境变量
-- [ ] 前端 Token 改用 HttpOnly Cookie 传递，避免 URL 暴露
 - [ ] 添加照片 EXIF 信息自动提取（拍摄时间、GPS 等）
 - [ ] 支持照片压缩上传，减少存储空间
 - [ ] 添加照片分享功能（生成临时链接）
