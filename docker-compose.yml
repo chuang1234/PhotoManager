@@ -1,0 +1,88 @@
+# ═══════════════════════════════════════════════
+# PhotoManager - Docker Compose 编排文件
+# 一键部署：docker compose up -d --build
+# ═══════════════════════════════════════════════
+
+services:
+  # ── MySQL 数据库 ──
+  mysql:
+    image: mysql:5.7
+    container_name: photo-manager-mysql
+    restart: unless-stopped
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-Chuang@123456}
+      MYSQL_DATABASE: family_photo
+      TZ: Asia/Shanghai
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_PASSWORD:-Chuang@123456}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+    networks:
+      - photo-network
+
+  # ── Flask 后端 ──
+  backend:
+    build:
+      context: ./family-photo-backend
+      dockerfile: Dockerfile
+    container_name: photo-manager-backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: ${DB_PASSWORD:-Chuang@123456}
+      DB_NAME: family_photo
+      JWT_SECRET: ${JWT_SECRET:-f7a3b9c2d1e8f6a4b0c5d3e2f1a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2}
+      JWT_EXPIRE_HOURS: ${JWT_EXPIRE_HOURS:-24}
+      AI_PROVIDER: ${AI_PROVIDER:-ollama}
+      AI_MODEL: ${AI_MODEL:-qwen2.5:14b}
+      AI_API_BASE: ${AI_API_BASE:-}
+      AI_API_KEY: ${AI_API_KEY:-}
+      AI_TIMEOUT: ${AI_TIMEOUT:-60}
+      FLASK_ENV: production
+      TZ: Asia/Shanghai
+    volumes:
+      - uploads_data:/app/uploads
+      - logs_data:/app/logs
+    ports:
+      - "${BACKEND_PORT:-5000}:5000"
+    networks:
+      - photo-network
+
+  # ── React 前端 (Nginx) ──
+  frontend:
+    build:
+      context: ./family-photo-frontend
+      dockerfile: Dockerfile
+    container_name: photo-manager-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "${FRONTEND_PORT:-80}:80"
+    networks:
+      - photo-network
+
+volumes:
+  mysql_data:
+    name: photo-manager-mysql-data
+  uploads_data:
+    name: photo-manager-uploads-data
+  logs_data:
+    name: photo-manager-logs-data
+
+networks:
+  photo-network:
+    name: photo-manager-network
+    driver: bridge
