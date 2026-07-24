@@ -25,3 +25,4 @@ uploads/
 # OS
 .DS_Store
 Thumbs.db
+/family-photo-frontend/node_modules/
