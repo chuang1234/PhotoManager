@@ -16,7 +16,8 @@ def get_current_member():
         'data': {
             'id': g.member_id,
             'username': g.member_username,
-            'name': g.member_name
+            'name': g.member_name,
+            'is_admin': bool(getattr(g, 'is_admin', 0)),
         }
     })
 
@@ -27,8 +28,11 @@ def get_members():
     try:
         conn = get_db_connection()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        cursor.execute('SELECT id, name, relation, email FROM family_member ORDER BY id ASC')
+        cursor.execute('SELECT id, name, relation, email, is_admin FROM family_member ORDER BY id ASC')
         members = cursor.fetchall()
+        # 将 is_admin 从 int 转为 boolean，前端更方便使用
+        for m in members:
+            m['is_admin'] = bool(m.get('is_admin', 0))
         cursor.close()
         conn.close()
         return jsonify({'code': 200, 'data': members})

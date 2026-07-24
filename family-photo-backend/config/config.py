@@ -78,6 +78,7 @@ def generate_token(member_info):
         'member_id': member_info['id'],
         'username': member_info['username'],
         'name': member_info['name'],
+        'is_admin': member_info['is_admin'],
         'exp': datetime.utcnow() + timedelta(hours=JWT_CONFIG['expire_hours'])
     }
     token = jwt.encode(payload, JWT_CONFIG['secret'], algorithm='HS256')

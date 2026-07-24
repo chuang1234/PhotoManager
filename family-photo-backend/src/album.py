@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 
 import pymysql
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, g
 from werkzeug.utils import secure_filename
 
 album_bp = Blueprint('album', __name__)
@@ -24,6 +24,14 @@ def get_album_photos(album_id):
     try:
         conn = get_db_connection()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+        # 权限校验：非管理员只能查看自己创建的相册
+        if not g.is_admin:
+            cursor.execute('SELECT id FROM album WHERE id = %s AND creator_id = %s', (album_id, g.member_id))
+            if not cursor.fetchone():
+                cursor.close()
+                conn.close()
+                return jsonify({'code': 403, 'msg': '无权查看该相册'}), 403
 
         # 1. 查询当前页数据
         sql = '''SELECT p.*, m.name as member_name, o.name as operator_name, f.folder_id as favorite_folder_id
@@ -68,14 +76,24 @@ def get_albums():
         conn = get_db_connection()
         # 核心修改：指定 DictCursor，让查询结果返回字典
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        # 关联查询最后上传人名称
-        sql = '''
-            SELECT a.*, m.name as last_upload_user_name 
-            FROM album a 
-            LEFT JOIN family_member m ON a.last_upload_user_id = m.id 
-            ORDER BY a.create_time DESC
-        '''
-        cursor.execute(sql)
+        # 关联查询最后上传人名称；非管理员只能看到自己创建的相册
+        if g.is_admin:
+            sql = '''
+                SELECT a.*, m.name as last_upload_user_name
+                FROM album a
+                LEFT JOIN family_member m ON a.last_upload_user_id = m.id
+                ORDER BY a.create_time DESC
+            '''
+            cursor.execute(sql)
+        else:
+            sql = '''
+                SELECT a.*, m.name as last_upload_user_name
+                FROM album a
+                LEFT JOIN family_member m ON a.last_upload_user_id = m.id
+                WHERE a.creator_id = %s
+                ORDER BY a.create_time DESC
+            '''
+            cursor.execute(sql, (g.member_id,))
         albums = cursor.fetchall()  # 现在返回字典列表，可正常用字符串索引
         # 处理封面路径
         for album in albums:
@@ -143,12 +161,12 @@ def create_album():
                     conn.close()
                     return jsonify({'code': 400, 'msg': '仅支持png/jpg/jpeg/gif/bmp格式的封面'}), 400
 
-        # 4. 插入相册记录
+        # 4. 插入相册记录（记录创建者，用于权限隔离）
         create_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         cursor.execute(
-            '''INSERT INTO album (album_name, cover_path, create_time, last_upload_time, last_upload_user_id) 
-               VALUES (%s, %s, %s, %s, %s)''',
-            (album_name.strip(), cover_path, create_time, None, None)
+            '''INSERT INTO album (album_name, cover_path, create_time, creator_id, last_upload_time, last_upload_user_id)
+               VALUES (%s, %s, %s, %s, %s, %s)''',
+            (album_name.strip(), cover_path, create_time, g.member_id, None, None)
         )
         conn.commit()
         new_album_id = cursor.lastrowid
@@ -181,12 +199,16 @@ def rename_album():
     try:
         conn = get_db_connection()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        # 校验相册是否存在
-        cursor.execute('SELECT id FROM album WHERE id = %s', (album_id,))
+        # 校验相册是否存在 + 权限校验（非管理员只能操作自己创建的相册）
+        if g.is_admin:
+            cursor.execute('SELECT id FROM album WHERE id = %s', (album_id,))
+        else:
+            cursor.execute('SELECT id FROM album WHERE id = %s AND creator_id = %s', (album_id, g.member_id))
         if not cursor.fetchone():
             cursor.close()
             conn.close()
-            return jsonify({'code': 404, 'msg': '相册不存在'}), 404
+            return jsonify({'code': 404 if g.is_admin else 403,
+                           'msg': '相册不存在' if g.is_admin else '无权操作该相册'}), 404 if g.is_admin else 403
         cursor.execute(
             'UPDATE album SET album_name = %s WHERE id = %s',
             (new_name, album_id)
@@ -210,13 +232,17 @@ def delete_album():
         conn = get_db_connection()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
-        # 先校验相册是否存在，防止对不存在的相册执行删除操作
-        cursor.execute('SELECT id, cover_path FROM album WHERE id = %s', (album_id,))
+        # 先校验相册是否存在 + 权限校验（非管理员只能操作自己创建的相册）
+        if g.is_admin:
+            cursor.execute('SELECT id, cover_path FROM album WHERE id = %s', (album_id,))
+        else:
+            cursor.execute('SELECT id, cover_path FROM album WHERE id = %s AND creator_id = %s', (album_id, g.member_id))
         album = cursor.fetchone()
         if not album:
             cursor.close()
             conn.close()
-            return jsonify({'code': 404, 'msg': '相册不存在'}), 404
+            return jsonify({'code': 404 if g.is_admin else 403,
+                           'msg': '相册不存在' if g.is_admin else '无权操作该相册'}), 404 if g.is_admin else 403
 
         # 先删除相册下的照片（可选：也可以保留照片，仅删除相册）
         cursor.execute('SELECT file_path FROM photo WHERE album_id = %s', (album_id,))
@@ -267,8 +293,11 @@ def upload_album_cover():
         try:
             conn = get_db_connection()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            # 校验相册是否存在
-            cursor.execute('SELECT id, cover_path FROM album WHERE id = %s', (album_id,))
+            # 校验相册是否存在 + 权限校验（非管理员只能操作自己创建的相册）
+            if g.is_admin:
+                cursor.execute('SELECT id, cover_path FROM album WHERE id = %s', (album_id,))
+            else:
+                cursor.execute('SELECT id, cover_path FROM album WHERE id = %s AND creator_id = %s', (album_id, g.member_id))
             old_cover = cursor.fetchone()
             if not old_cover:
                 cursor.close()
@@ -277,7 +306,8 @@ def upload_album_cover():
                 saved_path = os.path.join(UPLOAD_COVER_FOLDER, filename)
                 if os.path.exists(saved_path):
                     os.remove(saved_path)
-                return jsonify({'code': 404, 'msg': '相册不存在'}), 404
+                return jsonify({'code': 404 if g.is_admin else 403,
+                               'msg': '相册不存在' if g.is_admin else '无权操作该相册'}), 404 if g.is_admin else 403
             # 先删除旧封面（如果不是默认）
             if old_cover['cover_path'] != 'default_cover.jpg':
                 old_cover_path = os.path.join(UPLOAD_COVER_FOLDER, old_cover['cover_path'])

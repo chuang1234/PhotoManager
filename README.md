@@ -147,7 +147,7 @@ mysql -u root -p
 CREATE DATABASE family_photo DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE family_photo;
 
-# 导入建表 SQL
+# 导入建表 SQL（新建数据库时使用）
 source family-photo-backend/sql/table_info.sql;
 
 # （可选）插入测试家庭成员
@@ -246,14 +246,14 @@ family_member (家庭成员)
 
 | 表名 | 说明 | 关键字段 |
 |------|------|---------|
-| `family_member` | 家庭成员 / 登录账号 | `username`(唯一), `password`(bcrypt) |
-| `album` | 相册 | `album_name`, `cover_path`, `last_upload_user_id` |
+| `family_member` | 家庭成员 / 登录账号 | `username`(唯一), `password`(bcrypt), **`is_admin`**(权限标识) |
+| `album` | 相册 | `album_name`, `cover_path`, **`creator_id`**(创建者), `last_upload_user_id` |
 | `photo` | 照片 | `file_path`, `album_id`, `member_id`(归属), `operator_id`(上传者) |
 | `favorite_folder` | 收藏夹 | `folder_name`, `member_id`, `is_default` |
 | `favorite_photo` | 收藏记录 | `folder_id`, `photo_id`, `member_id`（唯一约束防重复） |
 | `ai_chat_message` | AI 聊天记录 | `member_id`, `role`(user/assistant), `content` |
 
-> 完整建表 SQL 见 `family-photo-backend/sql/table_info.sql`
+> 加粗字段为本次新增。完整建表 SQL 见 `family-photo-backend/sql/table_info.sql`
 
 ---
 
@@ -323,11 +323,52 @@ family_member (家庭成员)
 |------|------|
 | **认证** | JWT Token（HS256，24h 过期），`@login_required` 装饰器保护所有接口 |
 | **密码** | 前端 SHA256 + 后端 bcrypt（salt rounds=12）双重加密 |
+| **权限隔离** | `is_admin` 字段区分管理员/普通用户，普通用户只能操作自己创建的相册及照片 |
 | **文件上传** | 扩展名白名单校验、`secure_filename` 过滤、唯一文件名防覆盖 |
 | **路径安全** | 上传目录限制 + `_safe_path()` 绝对路径校验，防止路径遍历 |
 | **数据校验** | `album_id` 等参数强制正整数校验，存在性校验防止对不存在资源操作 |
 | **SQL 注入** | 全部使用 PyMySQL 参数化查询 (`%s`) |
 | **CORS** | Flask-CORS 配置 `supports_credentials=True` |
+
+---
+
+## 👥 权限体系
+
+### 角色说明
+
+| 角色 | `is_admin` 值 | 权限范围 |
+|------|--------------|---------|
+| **管理员** | `1` | 查看所有相册，操作所有资源 |
+| **普通成员** | `0`（默认） | 只能查看/操作**自己创建的**相册及照片 |
+
+### 权限配置
+
+在数据库中手动设置：
+
+```sql
+-- 将某用户设为管理员
+UPDATE family_member SET is_admin = 1 WHERE username = 'father';
+
+-- 取消管理员权限
+UPDATE family_member SET is_admin = 0 WHERE username = 'father';
+
+-- 查看所有成员的权限
+SELECT id, name, username, is_admin FROM family_member;
+```
+
+### 权限覆盖范围
+
+| 操作 | 管理员 | 普通成员 |
+|------|--------|---------|
+| 查看相册列表 | 所有相册 | 仅自己创建的 |
+| 查看相册照片 | 任意相册 | 仅自己创建的相册 |
+| 创建相册 | ✅ | ✅（自动成为创建者） |
+| 重命名/删除相册 | 任意相册 | 仅自己创建的 |
+| 更换相册封面 | 任意相册 | 仅自己创建的 |
+| 上传照片 | 任意相册 | 仅自己创建的相册 |
+| 删除照片 | 任意照片 | 仅自己相册中的照片 |
+| 搜索照片 | 任意相册 | 仅自己创建的相册 |
+| 收藏/取消收藏 | ✅ | ✅（收藏为个人行为，无需权限） |
 
 ---
 

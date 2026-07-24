@@ -24,6 +24,7 @@ def login_required(f):
         g.member_id = payload['member_id']
         g.member_username = payload['username']
         g.member_name = payload['name']
+        g.is_admin = payload.get('is_admin', 0)
 
         return f(*args, **kwargs)
     wrapper.__name__ = f.__name__
@@ -44,9 +45,9 @@ def login():
     try:
         conn = get_db_connection()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
-        # 查询成员信息（密码暂时明文，后续可改为验证加密后的密码）
+        # 查询成员信息（含权限标识）
         cursor.execute(
-            'SELECT id, name, username, email, password FROM family_member WHERE username = %s',
+            'SELECT id, name, username, email, password, is_admin FROM family_member WHERE username = %s',
             (username,)
         )
         member = cursor.fetchone()
@@ -59,11 +60,12 @@ def login():
         if not verify_password(password, member['password']):
             return jsonify({'code': 400, 'msg': '密码错误'}), 400
 
-        # 生成Token（携带成员信息）
+        # 生成Token（携带成员信息及权限标识）
         token = generate_token({
             'id': member['id'],
             'username': member['username'],
-            'name': member['name']
+            'name': member['name'],
+            'is_admin': member.get('is_admin', 0),
         })
 
         # 返回成员信息（不含密码）
@@ -76,11 +78,13 @@ def login():
                     'id': member['id'],
                     'name': member['name'],
                     'username': member['username'],
-                    'email': member['email']
+                    'email': member['email'],
+                    'is_admin': bool(member.get('is_admin', 0)),
                 }
             }
         })
     except Exception as e:
+        logger.error(f'登录失败：{str(e)}')
         return jsonify({'code': 500, 'msg': f'登录失败：{str(e)}'}), 500
 
 

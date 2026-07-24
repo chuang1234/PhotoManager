@@ -8,6 +8,7 @@ create table family_member
     username    varchar(50)                        not null comment '登录用户名',
     password    varchar(100)                       not null comment '登录密码（建议加密存储）',
     email       varchar(100)                       null comment '邮箱',
+    is_admin    tinyint(1) default 0               not null comment '是否管理员（0-否，1-是，管理员可查看所有相册）',
     create_time datetime default CURRENT_TIMESTAMP null,
     constraint username
         unique (username)
@@ -40,6 +41,7 @@ create table album
     create_time         datetime     default CURRENT_TIMESTAMP   null,
     cover_photo         varchar(255)                             null,
     cover_path          varchar(255) default 'default_cover.jpg' null comment '封面路径',
+    creator_id          int                                      null comment '创建者ID（关联family_member.id）',
     last_upload_time    datetime                                 null comment '最后上传时间',
     last_upload_user_id int                                      null comment '最后上传人ID'
 );

@@ -41,6 +41,23 @@ def upload_photo():
     except (ValueError, TypeError):
         return jsonify({'code': 400, 'msg': '相册ID必须为正整数'}), 400
 
+    # ── 权限校验：非管理员只能上传到自己创建的相册 ──
+    try:
+        _conn = get_db_connection()
+        _cur = _conn.cursor(pymysql.cursors.DictCursor)
+        if g.is_admin:
+            _cur.execute('SELECT id FROM album WHERE id = %s', (album_id,))
+        else:
+            _cur.execute('SELECT id FROM album WHERE id = %s AND creator_id = %s', (album_id, g.member_id))
+        if not _cur.fetchone():
+            _cur.close()
+            _conn.close()
+            return jsonify({'code': 403, 'msg': '无权向该相册上传照片'}), 403
+        _cur.close()
+        _conn.close()
+    except Exception as e:
+        return jsonify({'code': 500, 'msg': f'权限校验失败：{str(e)}'}), 500
+
     if file and allowed_file(file.filename):
         # ── 安全校验：过滤原始文件名，防止路径遍历 ──
         filename = secure_filename(file.filename)
@@ -98,13 +115,25 @@ def delete_photo():
         # 核心修改1：使用 DictCursor，让查询结果返回字典
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
-        # 先查询照片是否存在
-        cursor.execute('SELECT file_path FROM photo WHERE id = %s', (photo_id,))
+        # 查询照片是否存在，同时关联相册做权限校验
+        cursor.execute(
+            '''SELECT p.file_path, p.album_id, a.creator_id
+               FROM photo p
+               LEFT JOIN album a ON p.album_id = a.id
+               WHERE p.id = %s''',
+            (photo_id,)
+        )
         photo = cursor.fetchone()
         if not photo:
             cursor.close()
             conn.close()
             return jsonify({'code': 404, 'msg': '照片不存在'}), 404
+
+        # 权限校验：非管理员只能删除自己创建的相册中的照片
+        if not g.is_admin and photo.get('creator_id') != g.member_id:
+            cursor.close()
+            conn.close()
+            return jsonify({'code': 403, 'msg': '无权删除该照片'}), 403
 
         # 删除物理文件
         file_path = os.path.join(UPLOAD_PHOTO_FOLDER, photo['file_path'])
@@ -145,6 +174,14 @@ def search_photos():
     try:
         conn = get_db_connection()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+        # 权限校验：非管理员只能搜索自己创建的相册中的照片
+        if not g.is_admin:
+            cursor.execute('SELECT id FROM album WHERE id = %s AND creator_id = %s', (album_id, g.member_id))
+            if not cursor.fetchone():
+                cursor.close()
+                conn.close()
+                return jsonify({'code': 403, 'msg': '无权搜索该相册'}), 403
 
         # 构建查询条件
         sql_count = 'SELECT COUNT(*) as total FROM photo p LEFT JOIN family_member m ON p.member_id = m.id LEFT JOIN family_member o ON p.operator_id = o.id WHERE p.album_id = %s'
