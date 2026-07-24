@@ -13,6 +13,31 @@ DEV_FORMAT = '[%(asctime)s] [%(levelname)s] [%(module)s:%(lineno)d] - %(message)
 PROD_FORMAT = '[%(asctime)s] [%(levelname)s] [%(module)s] - %(message)s'
 DATE_FMT = '%Y-%m-%d %H:%M:%S'
 
+
+class SafeTimedRotatingFileHandler(TimedRotatingFileHandler):
+    """
+    针对 Windows 的 TimedRotatingFileHandler 安全封装。
+
+    Windows 上日志文件被占用时，rotate() 会抛出 PermissionError。
+    本类在轮转失败时跳过本次轮转并输出警告，而不是让日志系统崩溃。
+    """
+
+    def rotate(self, source, dest):
+        try:
+            super().rotate(source, dest)
+        except PermissionError:
+            # Windows 上文件被锁，跳过本次轮转（下次触发时再尝试）
+            import sys
+            sys.stderr.write(
+                f'[日志轮转] 跳过：{os.path.basename(source)} 被锁定，'
+                f'无法重命名为 {os.path.basename(dest)}\n'
+            )
+        except OSError as e:
+            # 其他 OS 错误（如磁盘满）也优雅处理
+            import sys
+            sys.stderr.write(f'[日志轮转] 失败：{e}\n')
+
+
 def setup_logger(env='dev'):
     """初始化日志器"""
     # 全局日志器
@@ -27,8 +52,8 @@ def setup_logger(env='dev'):
         console_handler.setFormatter(logging.Formatter(DEV_FORMAT, DATE_FMT))
         logger.addHandler(console_handler)
 
-    # 2. 普通日志文件处理器
-    info_handler = TimedRotatingFileHandler(
+    # 2. 普通日志文件处理器（Windows 安全版）
+    info_handler = SafeTimedRotatingFileHandler(
         filename=os.path.join(LOG_DIR, 'info.log'),
         when='midnight',
         backupCount=30,
@@ -38,8 +63,8 @@ def setup_logger(env='dev'):
     info_handler.setFormatter(logging.Formatter(PROD_FORMAT, DATE_FMT))
     logger.addHandler(info_handler)
 
-    # 3. 错误日志文件处理器
-    error_handler = TimedRotatingFileHandler(
+    # 3. 错误日志文件处理器（Windows 安全版）
+    error_handler = SafeTimedRotatingFileHandler(
         filename=os.path.join(LOG_DIR, 'error.log'),
         when='midnight',
         backupCount=90,

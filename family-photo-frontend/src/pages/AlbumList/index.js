@@ -222,7 +222,7 @@ const AlbumList = () => {
                 <div className={styles.albumCover}>
                   <img
                     alt={album.album_name}
-                    src={`http://localhost:5000/uploads/covers/${album.cover_url}?token=${localStorage.getItem("family_photo_token")}`}
+                    src={`/uploads/covers/${album.cover_url}?token=${localStorage.getItem("family_photo_token") || ""}`}
                     className={styles.coverImg}
                   />
                   <div className={styles.coverMask}>

@@ -17,6 +17,7 @@ const HeaderComponent = () => {
       await request.post("/api/logout");
       localStorage.removeItem("family_photo_token");
       localStorage.removeItem("family_photo_member");
+      localStorage.removeItem("family_member_id");
       message.success("退出成功啦～👋"); // 温馨提示
       navigate("/login");
     } catch (err) {

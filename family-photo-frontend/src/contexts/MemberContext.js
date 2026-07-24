@@ -37,6 +37,7 @@ export const MemberProvider = ({ children }) => {
         setCurrentMember(null);
         localStorage.removeItem('family_photo_token');
         localStorage.removeItem('family_photo_member');
+        localStorage.removeItem('family_member_id');
     };
 
     return (

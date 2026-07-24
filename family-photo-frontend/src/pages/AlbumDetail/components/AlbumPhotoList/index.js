@@ -62,7 +62,7 @@ const AlbumPhotoList = ({ ref, isSearch }) => {
   const fetchFolders = async () => {
     try {
       const res = await request.get("/api/favorite/folders", {
-        params: { member_id: currentMember.member_id },
+        params: { member_id: currentMember.id },
       });
       if (res.code === 200) {
         setFolders(res.data);
@@ -241,7 +241,7 @@ const AlbumPhotoList = ({ ref, isSearch }) => {
     await request.post("/api/favorite/photos", {
       photo_id: favoritePhotoId,
       folder_id: folderId,
-      member_id: currentMember.member_id,
+      member_id: currentMember.id,
     });
     message.success("加入收藏夹成功啦～⭐");
     setFavoriteCfmVisible(false);

@@ -14,6 +14,7 @@ import zhCN from "antd/locale/zh_CN";
 import CreateAlbum from "./pages/CreateAlbum";
 import FavoriteManager from "./pages/FavoriteManager";
 import HeaderComponent from "./components/HeaderComponent";
+import AiChat from "./components/AiChat"; // AI 对话悬浮组件
 
 const { Content } = Layout;
 
@@ -56,6 +57,8 @@ function App() {
                           />
                         </Routes>
                       </Content>
+                      {/* AI 对话悬浮组件（登录后全局可见） */}
+                      <AiChat />
                     </>
                   </PrivateRoute>
                 }

@@ -102,6 +102,7 @@ def get_albums():
 
 # 新增：创建相册接口（放在 get_albums 接口下方）
 @album_bp.route('/album/create', methods=['POST'])
+@login_required
 def create_album():
     try:
         # 1. 获取普通参数（相册名称）
@@ -179,7 +180,13 @@ def rename_album():
         return jsonify({'code': 400, 'msg': '相册ID和新名称不能为空'}), 400
     try:
         conn = get_db_connection()
-        cursor = conn.cursor()
+        cursor = conn.cursor(pymysql.cursors.DictCursor)
+        # 校验相册是否存在
+        cursor.execute('SELECT id FROM album WHERE id = %s', (album_id,))
+        if not cursor.fetchone():
+            cursor.close()
+            conn.close()
+            return jsonify({'code': 404, 'msg': '相册不存在'}), 404
         cursor.execute(
             'UPDATE album SET album_name = %s WHERE id = %s',
             (new_name, album_id)
@@ -202,6 +209,15 @@ def delete_album():
     try:
         conn = get_db_connection()
         cursor = conn.cursor(pymysql.cursors.DictCursor)
+
+        # 先校验相册是否存在，防止对不存在的相册执行删除操作
+        cursor.execute('SELECT id, cover_path FROM album WHERE id = %s', (album_id,))
+        album = cursor.fetchone()
+        if not album:
+            cursor.close()
+            conn.close()
+            return jsonify({'code': 404, 'msg': '相册不存在'}), 404
+
         # 先删除相册下的照片（可选：也可以保留照片，仅删除相册）
         cursor.execute('SELECT file_path FROM photo WHERE album_id = %s', (album_id,))
         photos = cursor.fetchall()
@@ -213,9 +229,7 @@ def delete_album():
         # 删除照片记录
         cursor.execute('DELETE FROM photo WHERE album_id = %s', (album_id,))
         # 删除相册封面（如果不是默认封面）
-        cursor.execute('SELECT cover_path FROM album WHERE id = %s', (album_id,))
-        album = cursor.fetchone()
-        if album and album['cover_path'] != 'default_cover.jpg':
+        if album['cover_path'] != 'default_cover.jpg':
             cover_path = os.path.join(UPLOAD_COVER_FOLDER, album['cover_path'])
             if os.path.exists(cover_path):
                 os.remove(cover_path)
@@ -239,6 +253,13 @@ def upload_album_cover():
     album_id = request.form.get('album_id')
     if file.filename == '' or not album_id:
         return jsonify({'code': 400, 'msg': '文件或相册ID不能为空'}), 400
+    # 校验 album_id 为正整数，防止注入或异常值
+    try:
+        album_id = int(album_id)
+        if album_id <= 0:
+            raise ValueError()
+    except (ValueError, TypeError):
+        return jsonify({'code': 400, 'msg': '相册ID必须为正整数'}), 400
     # 验证文件类型
     if file and '.' in file.filename and file.filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
         filename = secure_filename(f'album_{album_id}_{datetime.now().strftime("%Y%m%d%H%M%S")}.jpg')
@@ -246,10 +267,19 @@ def upload_album_cover():
         try:
             conn = get_db_connection()
             cursor = conn.cursor(pymysql.cursors.DictCursor)
-            # 先删除旧封面（如果不是默认）
-            cursor.execute('SELECT cover_path FROM album WHERE id = %s', (album_id,))
+            # 校验相册是否存在
+            cursor.execute('SELECT id, cover_path FROM album WHERE id = %s', (album_id,))
             old_cover = cursor.fetchone()
-            if old_cover and old_cover['cover_path'] != 'default_cover.jpg':
+            if not old_cover:
+                cursor.close()
+                conn.close()
+                # 清理已上传的文件
+                saved_path = os.path.join(UPLOAD_COVER_FOLDER, filename)
+                if os.path.exists(saved_path):
+                    os.remove(saved_path)
+                return jsonify({'code': 404, 'msg': '相册不存在'}), 404
+            # 先删除旧封面（如果不是默认）
+            if old_cover['cover_path'] != 'default_cover.jpg':
                 old_cover_path = os.path.join(UPLOAD_COVER_FOLDER, old_cover['cover_path'])
                 if os.path.exists(old_cover_path):
                     os.remove(old_cover_path)

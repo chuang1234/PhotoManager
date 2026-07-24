@@ -21,7 +21,6 @@ const AlbumDetail = () => {
   const [favoriteCfmVisible, setFavoriteCfmVisible] = useState(false);
 
   const [searchParams, setSearchParams] = useState({});
-  const [folders, setFolders] = useState([]);
   const [favoritePhotoId, setFavoritePhotoId] = useState(null);
   const [activeKey, setActiveKey] = useState("photoList");
   const { currentMember } = useMember();
@@ -37,30 +36,10 @@ const AlbumDetail = () => {
     });
   }, []);
 
-  const fetchFolders = async () => {
-    try {
-      const res = await request.get("/api/favorite/folders", {
-        params: { member_id: currentMember.member_id },
-      });
-      if (res.code === 200) {
-        setFolders(res.data);
-      }
-    } catch (err) {
-      message.error("获取收藏夹失败啦～再试试✨");
-      console.error(err);
-    }
-  };
-
   // 初始化加载
   useEffect(() => {
     fetchMembers();
   }, [fetchMembers]);
-
-  useEffect(() => {
-    if (currentMember) {
-      fetchFolders();
-    }
-  }, [currentMember]);
 
   const fetchPhotos = async (isSearch, searchParams) =>
     await photoListRef.current.fetchPhotos(isSearch, searchParams);
@@ -89,7 +68,7 @@ const AlbumDetail = () => {
     await request.post("/api/favorite/photos", {
       photo_id: favoritePhotoId,
       folder_id: folderId,
-      member_id: currentMember.member_id,
+      member_id: currentMember.id,
     });
     message.success("加入收藏夹成功啦～⭐");
     setFavoriteCfmVisible(false);

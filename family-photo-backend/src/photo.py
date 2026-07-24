@@ -1,4 +1,5 @@
 import os
+import secrets
 from flask import Blueprint, request, jsonify, g
 import pymysql
 from datetime import datetime
@@ -32,15 +33,31 @@ def upload_photo():
     if not album_id:
         return jsonify({'code': 400, 'msg': '请选择所属相册'})
 
+    # ── 安全校验：album_id 必须为正整数，防止路径遍历攻击 ──
+    try:
+        album_id = int(album_id)
+        if album_id <= 0:
+            raise ValueError()
+    except (ValueError, TypeError):
+        return jsonify({'code': 400, 'msg': '相册ID必须为正整数'}), 400
+
     if file and allowed_file(file.filename):
+        # ── 安全校验：过滤原始文件名，防止路径遍历 ──
         filename = secure_filename(file.filename)
+        if not filename:
+            return jsonify({'code': 400, 'msg': '无效的文件名'}), 400
+
+        # ── 安全校验：生成唯一文件名，防止同名覆盖 ──
+        name_part, dot, ext_part = filename.rpartition('.')
+        unique_filename = f'{datetime.now().strftime("%Y%m%d%H%M%S")}_{secrets.token_hex(4)}.{ext_part}'
+
         album_dir = os.path.join(UPLOAD_PHOTO_FOLDER, str(album_id))
         if not os.path.exists(album_dir):
             os.makedirs(album_dir)
-        file_path = os.path.join(album_dir, filename)
+        file_path = os.path.join(album_dir, unique_filename)
         file.save(file_path)
 
-        relative_path = os.path.join(str(album_id), filename)
+        relative_path = os.path.join(str(album_id), unique_filename)
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
@@ -81,13 +98,18 @@ def delete_photo():
         # 核心修改1：使用 DictCursor，让查询结果返回字典
         cursor = conn.cursor(pymysql.cursors.DictCursor)
 
-        # 先查询文件路径（此时 photo 是字典，可通过 'file_path' 访问）
+        # 先查询照片是否存在
         cursor.execute('SELECT file_path FROM photo WHERE id = %s', (photo_id,))
         photo = cursor.fetchone()
-        if photo:
-            file_path = os.path.join(UPLOAD_PHOTO_FOLDER, photo['file_path'])  # 正常访问
-            if os.path.exists(file_path):
-                os.remove(file_path)  # 删除物理文件
+        if not photo:
+            cursor.close()
+            conn.close()
+            return jsonify({'code': 404, 'msg': '照片不存在'}), 404
+
+        # 删除物理文件
+        file_path = os.path.join(UPLOAD_PHOTO_FOLDER, photo['file_path'])
+        if os.path.exists(file_path):
+            os.remove(file_path)
 
         # 删除数据库记录
         cursor.execute('DELETE FROM photo WHERE id = %s', (photo_id,))

@@ -83,7 +83,7 @@ const PhotoCapture = ({ albumId, members, reload }) => {
       formData.append("photo", capturedImage.blob, capturedImage.name);
       formData.append("album_id", albumId);
       formData.append("member_id", selectedMember);
-      formData.append("operator_id", localStorage.getItem("member_id"));
+      formData.append("operator_id", localStorage.getItem("family_member_id"));
 
       const res = await request.post("/api/photos/upload", formData, {
         headers: {

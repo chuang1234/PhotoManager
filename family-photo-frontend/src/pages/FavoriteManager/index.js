@@ -44,7 +44,7 @@ const FavoriteManager = () => {
   const [editFolderId, setEditFolderId] = useState(null);
 
   // 当前登录用户ID
-  const memberId = localStorage.getItem("family_member_id") || 1;
+  const memberId = localStorage.getItem("family_member_id");
 
   // 1. 获取收藏夹列表
   const fetchFolders = useCallback(async () => {

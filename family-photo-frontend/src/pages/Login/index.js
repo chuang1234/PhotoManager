@@ -28,6 +28,7 @@ const Login = () => {
           "family_photo_member",
           JSON.stringify(res.data.member),
         );
+        localStorage.setItem("family_member_id", String(res.data.member.id));
         message.success(`欢迎回家，${res.data.member.name}～💖`); // 温馨提示
         window.location.href = "/";
       } else {
