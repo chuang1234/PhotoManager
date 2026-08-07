@@ -8,3 +8,4 @@ python-dotenv==1.0.0
 bcrypt==4.0.1
 openai==1.30.1  # AI 对话服务（可选，未安装时自动使用模拟回复）
 requests>=2.28.0  # Ollama 本地 AI 服务（可选，仅 AI_PROVIDER=ollama 时需要）
+gunicorn
