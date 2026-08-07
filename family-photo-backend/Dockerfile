@@ -18,7 +18,14 @@ RUN apt-get -o Acquire::AllowInsecureRepositories=true \
 
 # 安装 Python 依赖
 COPY requirements.txt .
-RUN pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
+RUN pip install --no-cache-dir \
+    -i https://pypi.tuna.tsinghua.edu.cn/simple \
+    --extra-index-url https://mirrors.aliyun.com/pypi/simple/ \
+    --extra-index-url https://pypi.org/simple/ \
+    --trusted-host pypi.tuna.tsinghua.edu.cn \
+    --trusted-host mirrors.aliyun.com \
+    --trusted-host pypi.org \
+    -r requirements.txt
 
 # 复制应用代码
 COPY . .
