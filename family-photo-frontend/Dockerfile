@@ -6,6 +6,8 @@ WORKDIR /app
 # 先复制依赖文件，利用 Docker 缓存层
 COPY package.json package-lock.json ./
 # npm ci 要求 lockfile 与 package.json 完全同步，失败时回退到 npm install
+# npm 换淘宝源
+RUN npm config set registry https://registry.npmmirror.com
 RUN npm ci --legacy-peer-deps || npm install --legacy-peer-deps
 
 # 复制源码并构建
